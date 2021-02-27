@@ -1,11 +1,15 @@
 package com.example.myapplication.Adapter;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.MainTasks;
@@ -52,11 +56,27 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         CheckBox task;
+        CardView cardView;
 
         ViewHolder(View view){
             super(view);
             task = view.findViewById(R.id.todoCheckBox);
+            cardView = view.findViewById(R.id.taskLayout);
 
+            task.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+                        task.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                        cardView.setBackgroundColor(Color.parseColor("#CACACA"));
+                    }else{
+                        task.setPaintFlags(0);
+                        cardView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    }
+                }
+            });
         }
+
     }
 }

@@ -11,7 +11,7 @@ public class MainMenu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_menu);
+        setContentView(R.layout.main_events);
 
         final Button buttonQuit = findViewById(R.id.button3);
 
