@@ -32,6 +32,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/mainMenuToDoButton"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -62,6 +63,7 @@
                 android:layout_weight="0.2">
             </View>
             <RelativeLayout
+                android:id="@+id/mainMenuEventsButton"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -93,6 +95,7 @@
             </View>
 
             <RelativeLayout
+                android:id="@+id/mainMenuShoppingButton"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"

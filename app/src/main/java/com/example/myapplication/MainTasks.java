@@ -28,6 +28,7 @@ public class MainTasks extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ((TextView)findViewById(R.id.textToolbar)).setText("Tasks");
 
+
         taskList = new ArrayList<>();
 
         tasksRecyclerView = findViewById(R.id.tasksRecycle);

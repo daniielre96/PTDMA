@@ -18,7 +18,7 @@ public class SplashScreen extends Activity {
         TimerTask task = new TimerTask(){
             @Override
             public void run() {
-                Intent intent = new Intent(SplashScreen.this, MainTasks.class);
+                Intent intent = new Intent(SplashScreen.this, MainMenu.class);
                 startActivity(intent);
                 finish();
             }
