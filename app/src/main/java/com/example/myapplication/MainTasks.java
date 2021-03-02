@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ToDoAdapter;
 import com.example.myapplication.Model.ToDoModel;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +30,6 @@ public class MainTasks extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ((TextView)findViewById(R.id.textToolbar)).setText("Tasks");
-
 
         taskList = new ArrayList<>();
 

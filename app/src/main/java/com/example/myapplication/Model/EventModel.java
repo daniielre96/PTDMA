@@ -6,24 +6,7 @@ public class EventModel {
     private int id, status;
     private String event;
 
-    private String day;
-    private String month;
-
-    public String getDay() {
-        return day;
-    }
-
-    public void setDay(String day) {
-        this.day = day;
-    }
-
-    public String getMonth() {
-        return month;
-    }
-
-    public void setMonth(String month) {
-        this.month = month;
-    }
+    private Date date;
 
     public int getId() {
         return id;
@@ -47,5 +30,13 @@ public class EventModel {
 
     public void setEvent(String event) {
         this.event = event;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
