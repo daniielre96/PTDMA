@@ -1,9 +1,12 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -30,6 +33,17 @@ public class MainTasks extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ((TextView)findViewById(R.id.textToolbar)).setText("Tasks");
+
+        final ImageButton microButton = findViewById(R.id.fab);
+
+        microButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainTasks.this, CreateTask.class);
+                startActivity(intent);
+            }
+        });
 
         taskList = new ArrayList<>();
 

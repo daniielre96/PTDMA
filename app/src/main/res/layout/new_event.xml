@@ -6,24 +6,39 @@
     <include layout="@layout/create_icon"></include>
     <include android:id="@+id/createToolbar" layout="@layout/toolbar"></include>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/createToolbar"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:orientation="vertical">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="50dp"
             android:ems="10"
-            android:hint="@string/task_name"
+            android:hint="@string/event_name"
             android:textColorHint="@color/white"
             android:textSize="16dp"
             android:paddingStart="12dp"
             android:background="@drawable/custom_input"
             android:textColor="@color/white">
         </EditText>
-    </RelativeLayout>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="50dp"
+            android:ems="10"
+            android:hint="@string/event_date"
+            android:textColorHint="@color/white"
+            android:textSize="16dp"
+            android:paddingStart="12dp"
+            android:background="@drawable/custom_input"
+            android:textColor="@color/white">
+        </EditText>
+
+    </LinearLayout>
 
 </RelativeLayout>
