@@ -40,7 +40,7 @@ public class MainTasks extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainTasks.this, QueryTasks.class);
+                Intent intent = new Intent(MainTasks.this, CreateTask.class);
                 startActivity(intent);
             }
         });
