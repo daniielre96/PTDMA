@@ -1,8 +1,21 @@
 package com.example.myapplication.Model;
 
+import com.example.myapplication.Adapter.ToDoAdapter;
+
+import java.util.ArrayList;
+
 public class ShoppingModel {
     private int id, image;
     private String title;
+    private ArrayList<ToDoModel> items;
+
+    public ArrayList<ToDoModel> getItems() {
+        return items;
+    }
+
+    public void setItems(ArrayList<ToDoModel> items) {
+        this.items = items;
+    }
 
     public int getId() {
         return id;

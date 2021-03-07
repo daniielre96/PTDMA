@@ -1,6 +1,8 @@
 package com.example.myapplication.Model;
 
-public class ToDoModel {
+import java.io.Serializable;
+
+public class ToDoModel implements Serializable {
     private int id, status;
     private String task;
 

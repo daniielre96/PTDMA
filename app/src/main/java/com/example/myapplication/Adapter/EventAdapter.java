@@ -1,5 +1,6 @@
 package com.example.myapplication.Adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -32,9 +33,9 @@ import java.util.Date;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
     private List<EventModel> eventList;
-    private MainEvents activity;
+    private Context activity;
 
-    public EventAdapter(MainEvents activity){ this.activity = activity; }
+    public EventAdapter(Context activity){ this.activity = activity; }
 
     @NonNull
     @Override

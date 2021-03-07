@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@drawable/ic_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include android:id="@+id/toolbar" layout="@layout/toolbar"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tasksRecycle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:nestedScrollingEnabled="true"/>
+
+</RelativeLayout>

@@ -36,6 +36,9 @@
         <activity android:name=".MainEvents" />
         <activity android:name=".MainShoppingList" />
         <activity android:name=".CreateShoppingList" />
+        <activity android:name=".QueryTasks" />
+        <activity android:name=".QueryEvents" />
+        <activity android:name=".ShoppingListView" />
     </application>
 
 </manifest>

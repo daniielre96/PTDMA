@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ShoppingAdapter;
 import com.example.myapplication.Model.ShoppingModel;
+import com.example.myapplication.Model.ToDoModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,14 +55,23 @@ public class MainShoppingList extends AppCompatActivity {
         model.setTitle("List 1");
         model.setImage(R.drawable.ic_baseline_shopping_cart_24);
 
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
+        // Items from shopping List
+
+        ArrayList<ToDoModel> items = new ArrayList<>();
+        ToDoModel task = new ToDoModel();
+        task.setTask("Item 1");
+        task.setStatus(0);
+        task.setId(1);
+
+        items.add(task);
+        items.add(task);
+        items.add(task);
+        items.add(task);        items.add(task);
+        items.add(task);        items.add(task);
+        items.add(task);        items.add(task);
+        items.add(task);
+
+        model.setItems(items);
 
         shoppingList.add(model);
         shoppingList.add(model);

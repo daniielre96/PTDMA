@@ -1,5 +1,6 @@
 package com.example.myapplication.Adapter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.MainTasks;
 import com.example.myapplication.Model.ToDoModel;
+import com.example.myapplication.QueryTasks;
 import com.example.myapplication.R;
 
 import java.util.List;
@@ -21,9 +23,9 @@ import java.util.List;
 public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
 
     private List<ToDoModel> todoList;
-    private MainTasks activity;
+    private Context activity;
 
-    public ToDoAdapter(MainTasks activity){
+    public ToDoAdapter(Context activity){
         this.activity = activity;
     }
 
