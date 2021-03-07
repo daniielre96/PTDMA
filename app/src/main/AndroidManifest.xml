@@ -34,6 +34,8 @@
         </activity>
         <activity android:name=".MainTasks" />
         <activity android:name=".MainEvents" />
+        <activity android:name=".MainShoppingList" />
+        <activity android:name=".CreateShoppingList" />
     </application>
 
 </manifest>

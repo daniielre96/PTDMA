@@ -37,6 +37,13 @@ public class MainMenu extends AppCompatActivity {
             }
         });
 
-        /* Button to Shopping List */
+        shoppingButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenu.this, MainShoppingList.class);
+                startActivity(intent);
+            }
+        });
     }
 }
