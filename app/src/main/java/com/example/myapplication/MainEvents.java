@@ -56,39 +56,47 @@ public class MainEvents extends AppCompatActivity {
         eventsAdapter = new EventAdapter(this);
         eventsRecyclerView.setAdapter(eventsAdapter);
 
-        EventModel event = new EventModel();
-        EventModel eventPassed = new EventModel();
+        // Insertion of actual events
+
+        int k = 1;
         SimpleDateFormat dateformat = new SimpleDateFormat("dd/MM");
-        try {
-            event.setDate(dateformat.parse("12/07"));
 
-            event.setEvent("Event 1");
-            event.setStatus(0);
-            event.setId(1);
+        for(int i=0; i < 5; i++){
 
-            eventPassed.setDate(dateformat.parse("01/01"));
-            eventPassed.setEvent("Passed Event");
-            eventPassed.setStatus(0);
-            eventPassed.setId(1);
+            EventModel event = new EventModel();
+            try {
+                event.setDate(dateformat.parse("12/07"));
 
-            eventList.add(eventPassed);
-            eventList.add(eventPassed);
-            eventList.add(eventPassed);
-            eventList.add(eventPassed);
-            eventList.add(eventPassed);
+                event.setEvent("Event 1");
+                event.setStatus(0);
+                event.setId(k);
+                eventList.add(event);
+                k++;
 
-
-            eventList.add(event);
-            eventList.add(event);
-            eventList.add(event);
-            eventList.add(event);        eventList.add(event);
-            eventList.add(event);        eventList.add(event);
-            eventList.add(event);        eventList.add(event);
-            eventList.add(event);
-
-            eventsAdapter.setEvents(eventList);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
+
+        // Insertion of past events
+
+        for(int i=0; i < 5; i++){
+
+            EventModel event = new EventModel();
+            try {
+                event.setDate(dateformat.parse("01/01"));
+
+                event.setEvent("Passed Event");
+                event.setStatus(0);
+                event.setId(k);
+                eventList.add(event);
+                k++;
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        eventsAdapter.setEvents(eventList);
     }
 }

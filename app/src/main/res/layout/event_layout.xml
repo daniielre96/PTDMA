@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/eventLayout"
-    android:layout_height="wrap_content"
+    android:layout_height="60dp"
     android:layout_width="match_parent"
     app:cardElevation="4dp"
     app:cardCornerRadius="8dp"
@@ -46,14 +46,47 @@
                 </TextView>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/eventText"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="PATATA"
-                android:paddingStart="20dp">
-            </TextView>
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/eventText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:text="1. Event 1"
+                    android:paddingStart="20dp">
+                </TextView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp">
+
+                    <ImageView
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/ic_clock">
+                    </ImageView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="5dp"
+                        android:layout_marginTop="3dp"
+                        android:textSize="10dp"
+                        android:text="All day">
+
+                    </TextView>
+
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
 
     </RelativeLayout>

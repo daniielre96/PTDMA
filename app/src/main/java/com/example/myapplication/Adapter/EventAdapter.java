@@ -48,7 +48,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     public void onBindViewHolder(ViewHolder holder, int position){
         EventModel item = eventList.get(position);
-        holder.event.setText(item.getEvent());
+        holder.event.setText(String.valueOf(item.getId()) + ". " + item.getEvent());
         holder.day.setText((String) DateFormat.format("dd", item.getDate()));
         holder.month.setText(((String) DateFormat.format("MMM", item.getDate())).toUpperCase());
 

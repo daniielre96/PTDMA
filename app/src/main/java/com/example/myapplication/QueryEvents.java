@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapter.EventAdapter;
 import com.example.myapplication.Model.EventModel;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,25 +38,28 @@ public class QueryEvents extends AppCompatActivity {
         eventsAdapter = new EventAdapter(this);
         eventsRecyclerView.setAdapter(eventsAdapter);
 
-        EventModel event = new EventModel();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM");
+        // Insertion of actual events
 
-        try{
-            event.setDate(dateFormat.parse("25/12"));
-            event.setEvent("Merry Christmas");
-            event.setStatus(0);
-            event.setId(1);
+        int k = 1;
+        SimpleDateFormat dateformat = new SimpleDateFormat("dd/MM");
 
-            eventList.add(event);
-            eventList.add(event);
-            eventList.add(event);
-            eventList.add(event);
-            eventList.add(event);
+        for(int i=0; i < 5; i++){
 
-            eventsAdapter.setEvents(eventList);
+            EventModel event = new EventModel();
+            try {
+                event.setDate(dateformat.parse("25/12"));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                event.setEvent("Merry Christmas");
+                event.setStatus(0);
+                event.setId(k);
+                eventList.add(event);
+                k++;
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
+
+        eventsAdapter.setEvents(eventList);
     }
 }
