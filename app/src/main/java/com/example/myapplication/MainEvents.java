@@ -44,7 +44,7 @@ public class MainEvents extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainEvents.this, QueryEvents.class);
+                Intent intent = new Intent(MainEvents.this, CreateEvent.class);
                 startActivity(intent);
             }
         });
