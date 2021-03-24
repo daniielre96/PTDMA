@@ -39,6 +39,19 @@
             android:textColor="@color/white">
         </EditText>
 
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="50dp"
+            android:ems="10"
+            android:hint="@string/event_time"
+            android:textColorHint="@color/white"
+            android:textSize="16dp"
+            android:paddingStart="12dp"
+            android:background="@drawable/custom_input"
+            android:textColor="@color/white">
+        </EditText>
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -9,6 +9,7 @@
     <string name="task_name">Say the name of the task...</string>
     <string name="event_name">Say the name of the event...</string>
     <string name="event_date">Say the date of the event...</string>
+    <string name="event_time">Say the time of the event</string>
     <string name="shopping_name">Say the name of the shopping list...</string>
     <string name="title_activity_create_event">CreateEvent</string>
 </resources>
