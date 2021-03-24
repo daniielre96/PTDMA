@@ -3,12 +3,16 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,34 +23,40 @@ import com.example.myapplication.Model.ToDoModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainShoppingList extends AppCompatActivity {
+public class MainShoppingList extends Fragment {
 
     private RecyclerView shoppingRecyclerView;
     private ShoppingAdapter shoppingAdapter;
     
     private List<ShoppingModel> shoppingList;
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ((TextView)findViewById(R.id.textToolbar)).setText("Shopping List");
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment, container, false);
+    }
 
-        final ImageButton microButton = findViewById(R.id.fab);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((TextView)getActivity().findViewById(R.id.textToolbar)).setText("Shopping List");
+
+        final ImageButton microButton = getView().findViewById(R.id.fab);
 
         microButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainShoppingList.this, CreateShoppingList.class);
+                Intent intent = new Intent(getContext(), CreateShoppingList.class);
                 startActivity(intent);
             }
         });
         
         shoppingList = new ArrayList<>();
         
-        shoppingRecyclerView = findViewById(R.id.tasksRecycle);
-        shoppingRecyclerView.setLayoutManager(new GridLayoutManager(MainShoppingList.this, 2, GridLayoutManager.VERTICAL, false));
+        shoppingRecyclerView = getView().findViewById(R.id.tasksRecycle);
+        shoppingRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
         shoppingAdapter = new ShoppingAdapter(this);
         shoppingRecyclerView.setAdapter(shoppingAdapter);
 
