@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,9 +15,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainMenu extends AppCompatActivity {
+public class MainMenu extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -25,6 +27,8 @@ public class MainMenu extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.navbar);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
+
+        Voice.initContext(this, this);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainTasks()).commit();
     }
@@ -54,37 +58,15 @@ public class MainMenu extends AppCompatActivity {
 
             };
 
-    /*@Override
-    protected void onCreateView(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_menu);
+    @Override
+    protected void onDestroy() {
+        Voice.destroyVoice();
+        super.onDestroy();
+    }
 
-        final RelativeLayout toDoButton = findViewById(R.id.mainMenuToDoButton);
-        final RelativeLayout eventsButton = findViewById(R.id.mainMenuEventsButton);
-        final RelativeLayout shoppingButton = findViewById(R.id.mainMenuShoppingButton);
+    @Override
+    public void onInit(int status) {
+        if(Voice.onInit(status)) Voice.instancia().speak("Hola Bona Tarda", TextToSpeech.QUEUE_FLUSH, null, "text");
 
-        toDoButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainMenu.this, MainTasks.class);
-                startActivity(intent);
-            }
-        });
-
-        eventsButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainMenu.this, MainEvents.class);
-                startActivity(intent);
-            }
-        });
-
-        shoppingButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainMenu.this, MainShoppingList.class);
-                startActivity(intent);
-            }
-        });*/
+    }
 }
