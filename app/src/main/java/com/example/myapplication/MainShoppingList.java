@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ShoppingAdapter;
+import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.Model.ToDoModel;
+import com.example.myapplication.comandVoice.Voice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,9 @@ public class MainShoppingList extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if(!((GlobalVars)this.getActivity().getApplication()).isMainShoppingListWelcome()) Voice.instancia().speak(getString(R.string.MainShoppingListWelcome), TextToSpeech.QUEUE_FLUSH, null, "text");
+        ((GlobalVars)this.getActivity().getApplication()).setMainShoppingListWelcome(true);
 
         ((TextView)getActivity().findViewById(R.id.textToolbar)).setText("Shopping List");
 

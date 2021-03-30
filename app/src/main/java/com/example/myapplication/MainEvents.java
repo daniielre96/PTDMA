@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +21,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.EventAdapter;
+import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.Model.EventModel;
+import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 
 import java.util.Date;
@@ -39,12 +42,16 @@ public class MainEvents extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if(!((GlobalVars)this.getActivity().getApplication()).isMainEventsWelcome()) Voice.instancia().speak(getString(R.string.MainEventsWelcome), TextToSpeech.QUEUE_FLUSH, null, "text");
+        ((GlobalVars)this.getActivity().getApplication()).setMainEventsWelcome(true);
 
         ((TextView)getActivity().findViewById(R.id.textToolbar)).setText("Events");
 

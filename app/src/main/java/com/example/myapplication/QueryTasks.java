@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,7 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ToDoAdapter;
+import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.Model.ToDoModel;
+import com.example.myapplication.comandVoice.Voice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,8 @@ public class QueryTasks extends AppCompatActivity {
         setContentView(R.layout.query_view);
         ((TextView)findViewById(R.id.textToolbar)).setText("Task query");
         ((ImageView)findViewById(R.id.toolbarLeftIcon)).setBackgroundResource(R.drawable.ic_filter);
+
+        Voice.instancia().speak(getString(R.string.Query), TextToSpeech.QUEUE_FLUSH, null, "text");
 
         taskList = new ArrayList<>();
 

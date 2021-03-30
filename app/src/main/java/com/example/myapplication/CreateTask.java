@@ -8,11 +8,15 @@ import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.myapplication.Global.GlobalVars;
+import com.example.myapplication.comandVoice.Voice;
 
 public class CreateTask extends AppCompatActivity {
 
@@ -35,6 +39,9 @@ public class CreateTask extends AppCompatActivity {
                 openDialog();
             }
         });
+
+        if(!((GlobalVars)this.getApplication()).isCreateModiftyTaskWelcome())  Voice.instancia().speak(getString(R.string.CreateModifyTaskWelcome), TextToSpeech.QUEUE_FLUSH, null, "text");
+        ((GlobalVars)this.getApplication()).setCreateModiftyTaskWelcome(true);
     }
 
     private void openDialog() {

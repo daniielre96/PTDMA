@@ -12,4 +12,17 @@
     <string name="event_time">Say the time of the event</string>
     <string name="shopping_name">Say the name of the shopping list...</string>
     <string name="title_activity_create_event">CreateEvent</string>
+
+    <!-- JARVIS strings -->
+
+    <string name="MainToDoWelcome">Welcome to the To-Do list, where you can create, modify, query, or delete tasks</string>
+    <string name="CreateModifyTaskWelcome">Welcome to the creation or modification of a task, configure the name of your task</string>
+    <string name="Query">Here are the results</string>
+    <string name="MainEventsWelcome">Welcome to Events, where you can create, modify, query, or delete events</string>
+    <string name="CrateModifyEventWelcome">Welcome to creating or modifying an event, set the name, the date and the time of your event</string>
+    <string name="MainShoppingListWelcome">Welcome to the sopping list, where you can create, modify, or delete a shopping list </string>
+    <string name="CreateModifyShoppingList">Welcome to creating or modifying a shopping list, configure the name of your list</string>
+    <string name="ShowShoppingList">Welcome to the list, where you can add or delete items</string>
+    <string name="NotPermisionMessage">Sorry I can here you</string>
+
 </resources>

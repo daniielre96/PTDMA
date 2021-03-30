@@ -4,8 +4,6 @@ import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
-import org.w3c.dom.Text;
-
 import java.util.Locale;
 
 public class Voice{
