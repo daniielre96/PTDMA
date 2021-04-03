@@ -17,6 +17,7 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ToDoAdapter;
 import com.example.myapplication.Model.ToDoModel;
+import com.example.myapplication.comandVoice.Listen;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 
 import java.lang.reflect.Array;
@@ -34,14 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainTasks extends Fragment {
+public class MainTasks extends Listen {
 
     private RecyclerView tasksRecyclerView;
     private ToDoAdapter tasksAdapter;
 
     private List<ToDoModel> taskList;
 
-    private SpeechRecognizer speechRecognizer;
+     //private SpeechRecognizer speechRecognizer;
 
     @Nullable
     @Override
@@ -70,7 +72,7 @@ public class MainTasks extends Fragment {
 
         /** SPEECH RECONIZER **/
 
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this.getActivity());
+        /*speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this.getActivity());
 
         final Intent speechReconizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -122,7 +124,7 @@ public class MainTasks extends Fragment {
             public void onEvent(int eventType, Bundle params) {
 
             }
-        });
+        });*/
 
 
         microButton.setOnTouchListener(new View.OnTouchListener() {
@@ -130,11 +132,11 @@ public class MainTasks extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_UP){
                     microButton.setImageResource(R.drawable.ic_grupo_48);
-                    speechRecognizer.stopListening();
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
                 }
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
                     microButton.setImageResource(R.drawable.ic_grupo_48_red);
-                    speechRecognizer.startListening(speechReconizerIntent);
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
                 }
 
                 return false;
@@ -162,5 +164,10 @@ public class MainTasks extends Fragment {
         taskList.add(task);
 
         tasksAdapter.setTasks(taskList);
+    }
+
+    @Override
+    public void getResult(String result) {
+        Toast.makeText(this.getActivity(), result, Toast.LENGTH_LONG).show();
     }
 }
