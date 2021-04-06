@@ -8,10 +8,12 @@ import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapter.EventAdapter;
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.Model.EventModel;
+import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 
@@ -32,7 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainEvents extends Fragment {
+public class MainEvents extends Listen {
 
     private RecyclerView eventsRecyclerView;
     private EventAdapter eventsAdapter;
@@ -57,12 +60,21 @@ public class MainEvents extends Fragment {
 
         final ImageButton microButton = getView().findViewById(R.id.fab);
 
-        microButton.setOnClickListener(new View.OnClickListener() {
+        /** SPEECH RECONIZER **/
 
+        microButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), CreateEvent.class);
-                startActivity(intent);
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    microButton.setImageResource(R.drawable.ic_grupo_48);
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
+                }
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    microButton.setImageResource(R.drawable.ic_grupo_48_red);
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
+                }
+
+                return false;
             }
         });
 
@@ -115,5 +127,14 @@ public class MainEvents extends Fragment {
         }
 
         eventsAdapter.setEvents(eventList);
+    }
+
+    @Override
+    public void getResult(String result) {
+
+        if(result.equalsIgnoreCase("create a new event")){
+            Intent myIntent = new Intent(this.getActivity(), CreateEvent.class);
+            startActivity(myIntent);
+        }
     }
 }

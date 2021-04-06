@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/ic_background">
 
-    <include layout="@layout/create_icon"></include>
+    <include android:id="@+id/createIcon" layout="@layout/create_icon"></include>
     <include android:id="@+id/createToolbar" layout="@layout/toolbar"></include>
 
     <RelativeLayout

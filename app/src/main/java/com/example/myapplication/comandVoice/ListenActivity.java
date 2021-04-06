@@ -1,32 +1,27 @@
 package com.example.myapplication.comandVoice;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
-public abstract class Listen extends Fragment implements RecognitionListener{
+public abstract class ListenActivity  extends AppCompatActivity implements RecognitionListener {
 
     static SpeechRecognizer instancia = null;
 
     public void startListening(){
+        instancia = SpeechRecognizer.createSpeechRecognizer(this);
+        instancia.setRecognitionListener(this);
 
-            instancia = SpeechRecognizer.createSpeechRecognizer(this.getContext());
-            instancia.setRecognitionListener(this);
-
-            instancia.startListening(getIntent());
+        instancia.startListening(getIntentActivity());
     }
 
-    public void stopListening(){
-        instancia.stopListening();
-    }
+    public void stopListening(){ instancia.stopListening();}
 
     @Override
     public void onReadyForSpeech(Bundle params) {
@@ -75,7 +70,7 @@ public abstract class Listen extends Fragment implements RecognitionListener{
 
     public abstract void getResult(String result);
 
-    static public Intent getIntent(){
+    static public Intent getIntentActivity(){
         Intent speechReconizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US);

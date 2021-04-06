@@ -72,60 +72,6 @@ public class MainTasks extends Listen {
 
         /** SPEECH RECONIZER **/
 
-        /*speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this.getActivity());
-
-        final Intent speechReconizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US);
-
-        speechRecognizer.setRecognitionListener(new RecognitionListener() {
-            @Override
-            public void onReadyForSpeech(Bundle params) {
-
-            }
-
-            @Override
-            public void onBeginningOfSpeech() {
-
-            }
-
-            @Override
-            public void onRmsChanged(float rmsdB) {
-
-            }
-
-            @Override
-            public void onBufferReceived(byte[] buffer) {
-
-            }
-
-            @Override
-            public void onEndOfSpeech() {
-
-            }
-
-            @Override
-            public void onError(int error) {
-
-            }
-
-            @Override
-            public void onResults(Bundle results) {
-                ArrayList<String> data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                System.out.println(data.get(0));
-            }
-
-            @Override
-            public void onPartialResults(Bundle partialResults) {
-
-            }
-
-            @Override
-            public void onEvent(int eventType, Bundle params) {
-
-            }
-        });*/
-
 
         microButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -168,6 +114,10 @@ public class MainTasks extends Listen {
 
     @Override
     public void getResult(String result) {
-        Toast.makeText(this.getActivity(), result, Toast.LENGTH_LONG).show();
+
+        if(result.equalsIgnoreCase("create a new task")){
+            Intent myIntent = new Intent(this.getActivity(), CreateTask.class);
+            startActivity(myIntent);
+        }
     }
 }

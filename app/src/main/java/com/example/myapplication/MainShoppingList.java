@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,12 +23,13 @@ import com.example.myapplication.Adapter.ShoppingAdapter;
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.Model.ToDoModel;
+import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainShoppingList extends Fragment {
+public class MainShoppingList extends Listen {
 
     private RecyclerView shoppingRecyclerView;
     private ShoppingAdapter shoppingAdapter;
@@ -50,15 +53,26 @@ public class MainShoppingList extends Fragment {
 
         final ImageButton microButton = getView().findViewById(R.id.fab);
 
-        microButton.setOnClickListener(new View.OnClickListener() {
+        /** SPEECH RECONIZER **/
 
+
+        microButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), CreateShoppingList.class);
-                startActivity(intent);
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    microButton.setImageResource(R.drawable.ic_grupo_48);
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
+                }
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    microButton.setImageResource(R.drawable.ic_grupo_48_red);
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
+                }
+
+                return false;
             }
         });
-        
+
+
         shoppingList = new ArrayList<>();
         
         shoppingRecyclerView = getView().findViewById(R.id.tasksRecycle);
@@ -100,5 +114,14 @@ public class MainShoppingList extends Fragment {
 
         shoppingAdapter.setShoppingList(shoppingList);
 
+    }
+
+    @Override
+    public void getResult(String result) {
+
+        if(result.equalsIgnoreCase("create a new shopping list")){
+            Intent myIntent = new Intent(this.getActivity(), CreateShoppingList.class);
+            startActivity(myIntent);
+        }
     }
 }

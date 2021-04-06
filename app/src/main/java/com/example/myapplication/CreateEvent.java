@@ -4,13 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.Global.GlobalVars;
+import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
 
-public class CreateEvent extends AppCompatActivity{
+public class CreateEvent extends ListenActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,5 +26,29 @@ public class CreateEvent extends AppCompatActivity{
 
         if(!((GlobalVars)this.getApplication()).isCreateModifyEventWelcome())  Voice.instancia().speak(getString(R.string.CrateModifyEventWelcome), TextToSpeech.QUEUE_FLUSH, null, "text");
         ((GlobalVars)this.getApplication()).setCreateModifyEventWelcome(true);
+
+        final ImageButton microButton = findViewById(R.id.fab);
+
+        microButton.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    microButton.setBackgroundResource(R.drawable.ic_grupo_48);
+                    stopListening();
+                }
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    microButton.setBackgroundResource(R.drawable.ic_grupo_48_red);
+                    startListening();
+                }
+
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void getResult(String result) {
+        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
     }
 }
