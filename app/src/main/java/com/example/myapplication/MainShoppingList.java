@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ShoppingAdapter;
 import com.example.myapplication.Global.GlobalVars;
+import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.comandVoice.Listen;
@@ -119,9 +120,27 @@ public class MainShoppingList extends Listen {
     @Override
     public void getResult(String result) {
 
-        if(result.equalsIgnoreCase("create a new shopping list")){
-            Intent myIntent = new Intent(this.getActivity(), CreateShoppingList.class);
-            startActivity(myIntent);
+        int action = Message.parseMainShoppingList(result);
+
+        switch (action){
+            case 0: // UNDEFINED COMMAND
+                break;
+            case 1: // HELP
+                break;
+            case 2: // DELETE A LIST
+                break;
+            case 3: // DELETE ALL LISTS
+                break;
+            case 4: // CREATE A LIST
+                break;
+            case 5: // MODIFY A LIST
+                break;
+            case 6: // SHOW A LIST
+                break;
+            case 7: // ENABLE SOUND
+                break;
+            case 8: // DISABLE SOUND
+                break;
         }
     }
 }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.Global.GlobalVars;
+import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
 
@@ -76,6 +77,18 @@ public class CreateTask extends ListenActivity {
 
     @Override
     public void getResult(String result) {
-        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+
+        int action = Message.parseMainCreateModifyTask(result);
+
+        switch (action){
+            case 0: // UNDEFINED COMMAND
+                break;
+            case 1: // HELP
+                break;
+            case 2: // SET THE NAME OF THE TASK
+                break;
+            case 3: // CREATE THE TASK
+                break;
+        }
     }
 }

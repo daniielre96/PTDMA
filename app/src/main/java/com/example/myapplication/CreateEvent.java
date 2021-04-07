@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.Global.GlobalVars;
+import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
 
@@ -49,6 +50,22 @@ public class CreateEvent extends ListenActivity {
 
     @Override
     public void getResult(String result) {
-        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+
+        int action = Message.parseCreateModifyEvent(result);
+
+        switch (action){
+            case 0: // UNDEFINED COMMAND
+                break;
+            case 1: // HELP
+                break;
+            case 2:  // SET THE NAME OF THE EVENT
+                break;
+            case 3: // SET THE DATE OF THE EVENT
+                break;
+            case 4: // SET THE HOUR OF THE EVENT
+                break;
+            case 5: // CREATE THE EVENT
+                break;
+        }
     }
 }

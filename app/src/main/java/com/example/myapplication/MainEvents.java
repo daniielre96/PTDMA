@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.EventAdapter;
 import com.example.myapplication.Global.GlobalVars;
+import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.EventModel;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
@@ -132,9 +133,25 @@ public class MainEvents extends Listen {
     @Override
     public void getResult(String result) {
 
-        if(result.equalsIgnoreCase("create a new event")){
-            Intent myIntent = new Intent(this.getActivity(), CreateEvent.class);
-            startActivity(myIntent);
+        int action = Message.parseMainEvents(result);
+
+        switch (action){
+            case 0: // UNDEFINED COMMAND
+                break;
+            case 1: // HELP
+                break;
+            case 2: //  DELETE EVENT
+                break;
+            case 3: // DELETE ALL EVENTS FROM A DAY
+                break;
+            case 4: // CREATE AN EVENT
+                break;
+            case 5: // MODIFY AN EVENT
+                break;
+            case 6: // ENABLE SOUND
+                break;
+            case 7: // DISABLE SOUND
+                break;
         }
     }
 }

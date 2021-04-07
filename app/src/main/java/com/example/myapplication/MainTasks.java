@@ -27,12 +27,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ToDoAdapter;
+import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.comandVoice.Listen;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -115,9 +117,33 @@ public class MainTasks extends Listen {
     @Override
     public void getResult(String result) {
 
-        if(result.equalsIgnoreCase("create a new task")){
-            Intent myIntent = new Intent(this.getActivity(), CreateTask.class);
-            startActivity(myIntent);
+        int action = Message.parseMainToDo(result);
+
+        switch (action){
+            case 0: // UNDEFINED COMMAND
+                break;
+            case 1: // HELP
+                break;
+            case 2: // MARK TASK AS DONE
+                break;
+            case 3: // MARK TASK AS UNDONE
+                break;
+            case 4: // MARK ALL TASKS AS DONE
+                break;
+            case 5: // MARK ALL TASKS AS UNDONE
+                break;
+            case 6: // DELETE A TASK
+                break;
+            case 7: // DELETE ALL TASKS
+                break;
+            case 8: // CREATE A TASK
+                break;
+            case 9: // MODIFY A TASK
+                break;
+            case 10: // ENABLE SOUND
+                break;
+            case 11: // DISABLE SOUND
+                break;
         }
     }
 }
