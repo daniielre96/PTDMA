@@ -28,21 +28,21 @@ public class Message {
         if(message.contains("help")){ // HELP
             return 1;
         }
-        else if(stringContains(message, MARK_SINONIMUS) && !message.contains("all tasks")){ // MARK TASK AS DONE
-            Pattern pattern = Pattern.compile("task(.*?)as done");
-            Matcher matcher = pattern.matcher(message);
-            while(matcher.find()){return 2;}
-        }
         else if(stringContains(message, UNMARK_SINONIMUS) && !message.contains("all tasks")){ // MARK TASK AS UNDONE
             Pattern pattern = Pattern.compile("task(.*?)");
             Matcher matcher = pattern.matcher(message);
             while(matcher.find()){return 3;}
         }
-        else if(stringContains(message, MARK_SINONIMUS) && message.contains("done")){ // MARK ALL TASKS AS DONE
-            return 4;
-        }
         else if(stringContains(message, MARK_SINONIMUS) && message.contains("undone")){ // MARK ALL TASKS AS UNDONE
             return 5;
+        }
+        else if(stringContains(message, MARK_SINONIMUS) && !message.contains("all tasks")){ // MARK TASK AS DONE
+            Pattern pattern = Pattern.compile("task(.*?)as done");
+            Matcher matcher = pattern.matcher(message);
+            while(matcher.find()){return 2;}
+        }
+        else if(stringContains(message, MARK_SINONIMUS) && message.contains("done")){ // MARK ALL TASKS AS DONE
+            return 4;
         }
         else if(stringContains(message, DELETE_SINONIMUS) && !message.contains("all tasks")){ // DELETE A TASK
             Pattern pattern = Pattern.compile("task(.*?)");
@@ -220,7 +220,25 @@ public class Message {
     }
 
    static private boolean stringContains(String message, String [] strings){
-
+        System.out.println(Arrays.stream(strings).anyMatch(message::contains));
         return Arrays.stream(strings).anyMatch(message::contains);
    }
+
+    static public String getBetweenStrings(String start, String end, String target){
+
+        String result = null;
+        Pattern pattern = Pattern.compile(start + "(.*?)" + end, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(target);
+
+        while(matcher.find()) result = matcher.group(1);
+
+        return result;
+    }
+
+    static public String getAfterString(String start, String target){
+
+        String result = target.substring(target.indexOf(start) + start.length());
+
+        return result;
+    }
 }

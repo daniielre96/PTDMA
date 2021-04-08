@@ -78,7 +78,8 @@ public abstract class Listen extends Fragment implements RecognitionListener{
     static public Intent getIntent(){
         Intent speechReconizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US);
+        speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, Locale.US);
+        speechReconizerIntent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, true);
 
         return speechReconizerIntent;
     }

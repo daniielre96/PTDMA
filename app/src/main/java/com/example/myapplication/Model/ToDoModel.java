@@ -1,5 +1,7 @@
 package com.example.myapplication.Model;
 
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 
 public class ToDoModel implements Serializable {

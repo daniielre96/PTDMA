@@ -2,8 +2,12 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -18,6 +22,9 @@ import com.example.myapplication.comandVoice.Voice;
 
 public class CreateEvent extends ListenActivity {
 
+    private ImageButton helpButton;
+    private Dialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +33,17 @@ public class CreateEvent extends ListenActivity {
         ((ImageView)findViewById(R.id.toolbarLeftIcon)).setBackgroundResource(R.drawable.ic_edit);
 
         if(!((GlobalVars)this.getApplication()).isCreateModifyEventWelcome())  Voice.instancia().speak(getString(R.string.CrateModifyEventWelcome), TextToSpeech.QUEUE_FLUSH, null, "text");
+
+        helpButton = findViewById(R.id.toolbarRightIcon);
+        dialog = new Dialog(this);
+
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+            }
+        });
+
         ((GlobalVars)this.getApplication()).setCreateModifyEventWelcome(true);
 
         final ImageButton microButton = findViewById(R.id.fab);
@@ -55,8 +73,10 @@ public class CreateEvent extends ListenActivity {
 
         switch (action){
             case 0: // UNDEFINED COMMAND
+                undefinedCommand();
                 break;
             case 1: // HELP
+                openDialog();
                 break;
             case 2:  // SET THE NAME OF THE EVENT
                 break;
@@ -67,5 +87,20 @@ public class CreateEvent extends ListenActivity {
             case 5: // CREATE THE EVENT
                 break;
         }
+    }
+
+    /* COMMANDS ACTIONS METHODS */
+
+    private void undefinedCommand() {
+        Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+    }
+
+
+    private void openDialog() {
+        dialog.setContentView(R.layout.help_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setDimAmount(0.2f);
+        dialog.getWindow().getAttributes().gravity = Gravity.TOP;
+        dialog.show();
     }
 }

@@ -1,11 +1,15 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -40,6 +44,8 @@ public class MainEvents extends Listen {
 
     private RecyclerView eventsRecyclerView;
     private EventAdapter eventsAdapter;
+    private Dialog dialog;
+    private ImageButton helpButton;
 
     private List<EventModel> eventList;
 
@@ -60,6 +66,16 @@ public class MainEvents extends Listen {
         ((TextView)getActivity().findViewById(R.id.textToolbar)).setText("Events");
 
         final ImageButton microButton = getView().findViewById(R.id.fab);
+
+        helpButton = getActivity().findViewById(R.id.toolbarRightIcon);
+        dialog = new Dialog(this.getContext());
+
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+            }
+        });
 
         /** SPEECH RECONIZER **/
 
@@ -137,8 +153,10 @@ public class MainEvents extends Listen {
 
         switch (action){
             case 0: // UNDEFINED COMMAND
+                undefinedCommand();
                 break;
             case 1: // HELP
+                openDialog();
                 break;
             case 2: //  DELETE EVENT
                 break;
@@ -153,5 +171,19 @@ public class MainEvents extends Listen {
             case 7: // DISABLE SOUND
                 break;
         }
+    }
+
+    /* COMMANDS ACTIONS METHODS */
+
+    private void undefinedCommand() {
+        Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+    }
+
+    private void openDialog() {
+        dialog.setContentView(R.layout.help_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setDimAmount(0.2f);
+        dialog.getWindow().getAttributes().gravity = Gravity.TOP;
+        dialog.show();
     }
 }

@@ -24,5 +24,7 @@
     <string name="CreateModifyShoppingList">Welcome to creating or modifying a shopping list, configure the name of your list</string>
     <string name="ShowShoppingList">Welcome to the list, where you can add or delete items</string>
     <string name="NotPermisionMessage">Sorry I can here you</string>
+    <string name="UndefinedCommand">I don\'t understand your order</string>
+    <string name="TaskNotFound">Task not found</string>
 
 </resources>

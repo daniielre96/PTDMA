@@ -26,6 +26,7 @@ public class CreateTask extends ListenActivity {
 
     private ImageButton helpButton;
     private Dialog dialog;
+    private String nameOfTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,10 @@ public class CreateTask extends ListenActivity {
                 openDialog();
             }
         });
+
+        nameOfTask = getIntent().getStringExtra("TaskName");
+
+        if(nameOfTask != null) ((TextView)findViewById(R.id.createTaskName)).setText(nameOfTask);
 
         if(!((GlobalVars)this.getApplication()).isCreateModiftyTaskWelcome())  Voice.instancia().speak(getString(R.string.CreateModifyTaskWelcome), TextToSpeech.QUEUE_FLUSH, null, "text");
         ((GlobalVars)this.getApplication()).setCreateModiftyTaskWelcome(true);
@@ -67,14 +72,6 @@ public class CreateTask extends ListenActivity {
         });
     }
 
-    private void openDialog() {
-        dialog.setContentView(R.layout.help_dialog);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setDimAmount(0.2f);
-        dialog.getWindow().getAttributes().gravity = Gravity.TOP;
-        dialog.show();
-    }
-
     @Override
     public void getResult(String result) {
 
@@ -82,13 +79,30 @@ public class CreateTask extends ListenActivity {
 
         switch (action){
             case 0: // UNDEFINED COMMAND
+                undefinedCommand();
                 break;
             case 1: // HELP
+                openDialog();
                 break;
             case 2: // SET THE NAME OF THE TASK
                 break;
             case 3: // CREATE THE TASK
                 break;
         }
+    }
+
+    /* COMMANDS ACTIONS METHODS */
+
+    private void undefinedCommand() {
+        Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+    }
+
+
+    private void openDialog() {
+        dialog.setContentView(R.layout.help_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setDimAmount(0.2f);
+        dialog.getWindow().getAttributes().gravity = Gravity.TOP;
+        dialog.show();
     }
 }
