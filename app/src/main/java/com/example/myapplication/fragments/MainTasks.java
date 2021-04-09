@@ -1,19 +1,13 @@
-package com.example.myapplication;
+package com.example.myapplication.fragments;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,29 +15,22 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ToDoAdapter;
 import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.ToDoModel;
+import com.example.myapplication.R;
+import com.example.myapplication.activities.CreateTask;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainTasks extends Listen {
 
@@ -58,17 +45,6 @@ public class MainTasks extends Listen {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment, container, false);
-    }
-
-    public void scaleView(View v, float startScale, float endScale) {
-        Animation anim = new ScaleAnimation(
-                1f, 1f, // Start and end values for the X axis scaling
-                startScale, endScale, // Start and end values for the Y axis scaling
-                Animation.RELATIVE_TO_SELF, 0.5f, // Pivot point of X scaling
-                Animation.RELATIVE_TO_SELF, 0.5f); // Pivot point of Y scaling
-        anim.setFillAfter(true); // Needed to keep the result of the animation
-        anim.setDuration(1000);
-        v.startAnimation(anim);
     }
 
     @Override
@@ -187,6 +163,8 @@ public class MainTasks extends Listen {
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
+
+        Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 
     private void createTask() {
@@ -206,7 +184,7 @@ public class MainTasks extends Listen {
             startActivity(intent);
         }
         else{ // task not found
-            Voice.instancia().speak(getString(R.string.TaskNotFound), TextToSpeech.QUEUE_FLUSH, null, "text");
+            Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
     }
 
@@ -219,27 +197,35 @@ public class MainTasks extends Listen {
         if(task != null){ // task with name found
             taskList.remove(task);
             tasksAdapter.setTasks(taskList);
+
+            Voice.instancia().speak(getString(R.string.Delete, "task", nameOfTask), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
         else{ // task not found
-            Voice.instancia().speak(getString(R.string.TaskNotFound), TextToSpeech.QUEUE_FLUSH, null, "text");
+            Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
     }
 
     private void deleteAllTasks(){
         taskList.clear();
         tasksAdapter.setTasks(taskList);
+
+        Voice.instancia().speak(getString(R.string.DeleteAll, "tasks"), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 
     private void markTasksAsDone(){
 
         taskList.stream().forEach(t -> t.setStatus(1));
         tasksAdapter.setTasks(taskList);
+
+        Voice.instancia().speak(getString(R.string.MarkAllTasks), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 
     private void markTasksAsUndone(){
 
         taskList.stream().forEach(t -> t.setStatus(0));
         tasksAdapter.setTasks(taskList);
+
+        Voice.instancia().speak(getString(R.string.UnmarkAllTasks), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 
     private void markTaskAsDone(String result){
@@ -251,9 +237,11 @@ public class MainTasks extends Listen {
             task.setStatus(1);
             taskList.set(taskList.indexOf(task), task);
             tasksAdapter.setTasks(taskList);
+
+            Voice.instancia().speak(getString(R.string.MarkTask, nameOfTask), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
         else{
-            Voice.instancia().speak(getString(R.string.TaskNotFound), TextToSpeech.QUEUE_FLUSH, null, "text");
+            Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
     }
 
@@ -266,9 +254,11 @@ public class MainTasks extends Listen {
             task.setStatus(0);
             taskList.set(taskList.indexOf(task), task);
             tasksAdapter.setTasks(taskList);
+
+            Voice.instancia().speak(getString(R.string.UnmarkTask, nameOfTask), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
         else{
-            Voice.instancia().speak(getString(R.string.TaskNotFound), TextToSpeech.QUEUE_FLUSH, null, "text");
+            Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
     }
 }

@@ -13,9 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.MainTasks;
 import com.example.myapplication.Model.ToDoModel;
-import com.example.myapplication.QueryTasks;
 import com.example.myapplication.R;
 
 import java.util.List;

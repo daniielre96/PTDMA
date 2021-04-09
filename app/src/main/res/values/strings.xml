@@ -15,16 +15,56 @@
 
     <!-- JARVIS strings -->
 
-    <string name="MainToDoWelcome">Welcome to the To-Do list, where you can create, modify, query, or delete tasks</string>
-    <string name="CreateModifyTaskWelcome">Welcome to the creation or modification of a task, configure the name of your task</string>
-    <string name="Query">Here are the results</string>
-    <string name="MainEventsWelcome">Welcome to Events, where you can create, modify, query, or delete events</string>
-    <string name="CrateModifyEventWelcome">Welcome to creating or modifying an event, set the name, the date and the time of your event</string>
-    <string name="MainShoppingListWelcome">Welcome to the sopping list, where you can create, modify, or delete a shopping list </string>
-    <string name="CreateModifyShoppingList">Welcome to creating or modifying a shopping list, configure the name of your list</string>
-    <string name="ShowShoppingList">Welcome to the list, where you can add or delete items</string>
+    <!-- Global strings -->
+
     <string name="NotPermisionMessage">Sorry I can here you</string>
     <string name="UndefinedCommand">I don\'t understand your order</string>
-    <string name="TaskNotFound">Task not found</string>
+    <string name="Query">Here are the results</string>
+    <string name="HelpMe">Here are the different actions you can perform</string>
+    <string name="EnableSound">Sound enabled</string>
+    <string name="DisableSound">Sound disabled</string>
+    <string name="DeleteCancelled">Deletion cancelled</string>
+    <string name="Delete">%1$s %2$s will be deleted are you sure?</string>
+    <string name="DeleteYes">%1$s %2$s has been deleted</string>
+    <string name="DeleteAll">The %1$s will be deleted, are you sure?</string>
+    <string name="DeleteAllYes">All %1$s have been deleted</string>
+    <string name="NotFound">%1$s not found</string>
+    <string name="Exists">%1$s already exists</string>
+    <string name="Created">%1$s created successfully</string>
+    <string name="NameDefined">%1$s name defined</string>
+
+    <!-- MainToDo -->
+
+    <string name="MainToDoWelcome">Welcome to the To-Do list, where you can create, modify, query, or delete tasks</string>
+    <string name="MarkTask">Task %1$s has been marked as done</string>
+    <string name="UnmarkTask">Task %1$s has been marked as undone</string>
+    <string name="MarkAllTasks">All tasks have been marked as done</string>
+    <string name="UnmarkAllTasks">All tasks have been marked as undone</string>
+
+    <!-- CreateModifyTask -->
+
+    <string name="CreateModifyTaskWelcome">Welcome to the creation or modification of a task, configure the name of your task</string>
+
+    <!-- MainEvents -->
+    <string name="MainEventsWelcome">Welcome to Events, where you can create, modify, query, or delete events</string>
+
+    <!-- CreateModifyEvent -->
+
+    <string name="CrateModifyEventWelcome">Welcome to creating or modifying an event, set the name, the date and the time of your event</string>
+    <string name="EventDateDefined">Event date defined</string>
+    <string name="EventHourDefined">Event hour defined</string>
+
+    <!-- MainShoppingList -->
+
+    <string name="MainShoppingListWelcome">Welcome to the sopping list, where you can create, modify, or delete a shopping list </string>
+
+    <!-- CreateShoppingList -->
+
+    <string name="CreateModifyShoppingList">Welcome to creating or modifying a shopping list, configure the name of your list</string>
+
+    <!-- ShowShoppingList -->
+
+    <string name="ShowShoppingList">Welcome to the %1%s list, where you can add or delete items</string>
+    <string name="AddElement">Element added correctly</string>
 
 </resources>

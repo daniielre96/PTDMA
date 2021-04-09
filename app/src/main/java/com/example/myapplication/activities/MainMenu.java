@@ -1,26 +1,23 @@
-package com.example.myapplication;
+package com.example.myapplication.activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
 
 import com.example.myapplication.Global.GlobalVars;
+import com.example.myapplication.fragments.MainEvents;
+import com.example.myapplication.fragments.MainShoppingList;
+import com.example.myapplication.fragments.MainTasks;
+import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

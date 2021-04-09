@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -30,6 +30,7 @@ import com.example.myapplication.Adapter.EventAdapter;
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.EventModel;
+import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
@@ -152,10 +153,10 @@ public class MainEvents extends Listen {
         int action = Message.parseMainEvents(result);
 
         switch (action){
-            case 0: // UNDEFINED COMMAND
+            case 0: // UNDEFINED COMMAND (DONE)
                 undefinedCommand();
                 break;
-            case 1: // HELP
+            case 1: // HELP (DONE)
                 openDialog();
                 break;
             case 2: //  DELETE EVENT
@@ -185,5 +186,7 @@ public class MainEvents extends Listen {
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
+
+        Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 }

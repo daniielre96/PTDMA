@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.activities;
 
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapter.EventAdapter;
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.Model.EventModel;
+import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.Voice;
 
 import java.text.ParseException;

@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,10 +17,11 @@ import android.widget.Toast;
 
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
+import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
 
-public class CreateShoppingList extends ListenActivity {
+public class CreateEvent extends ListenActivity {
 
     private ImageButton helpButton;
     private Dialog dialog;
@@ -28,11 +29,11 @@ public class CreateShoppingList extends ListenActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.new_shoppinglist);
-        ((TextView)findViewById(R.id.textToolbar)).setText("Create a Shopping list");
+        setContentView(R.layout.new_event);
+        ((TextView)findViewById(R.id.textToolbar)).setText("Create an Event");
         ((ImageView)findViewById(R.id.toolbarLeftIcon)).setBackgroundResource(R.drawable.ic_edit);
 
-        if(!((GlobalVars)this.getApplication()).isCreateModifyShoppingList())  Voice.instancia().speak(getString(R.string.CreateModifyShoppingList), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(!((GlobalVars)this.getApplication()).isCreateModifyEventWelcome())  Voice.instancia().speak(getString(R.string.CrateModifyEventWelcome), TextToSpeech.QUEUE_FLUSH, null, "text");
 
         helpButton = findViewById(R.id.toolbarRightIcon);
         dialog = new Dialog(this);
@@ -44,7 +45,7 @@ public class CreateShoppingList extends ListenActivity {
             }
         });
 
-        ((GlobalVars)this.getApplication()).setCreateModifyShoppingList(true);
+        ((GlobalVars)this.getApplication()).setCreateModifyEventWelcome(true);
 
         final ImageButton microButton = findViewById(R.id.fab);
 
@@ -69,7 +70,7 @@ public class CreateShoppingList extends ListenActivity {
     @Override
     public void getResult(String result) {
 
-        int action = Message.parseCreateModifyShoppingList(result);
+        int action = Message.parseCreateModifyEvent(result);
 
         switch (action){
             case 0: // UNDEFINED COMMAND
@@ -78,12 +79,18 @@ public class CreateShoppingList extends ListenActivity {
             case 1: // HELP
                 openDialog();
                 break;
-            case 2: // SET THE NAME OF THE LIST
+            case 2:  // SET THE NAME OF THE EVENT
                 break;
-            case 3: // CREATE THE LIST
+            case 3: // SET THE DATE OF THE EVENT
+                break;
+            case 4: // SET THE HOUR OF THE EVENT
+                break;
+            case 5: // CREATE THE EVENT
                 break;
         }
     }
+
+    /* COMMANDS ACTIONS METHODS */
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
@@ -96,5 +103,7 @@ public class CreateShoppingList extends ListenActivity {
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
+
+        Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 }

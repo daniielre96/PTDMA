@@ -23,11 +23,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
-        <activity android:name=".CreateEvent"/>
-        <activity android:name=".CreateTask" />
-        <activity android:name=".MainMenu" />
+        <activity android:name=".activities.CreateEvent"/>
+        <activity android:name=".activities.CreateTask" />
+        <activity android:name=".activities.MainMenu" />
         <activity
-            android:name=".SplashScreen"
+            android:name=".activities.SplashScreen"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,10 +35,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateShoppingList" />
-        <activity android:name=".QueryTasks" />
-        <activity android:name=".QueryEvents" />
-        <activity android:name=".ShoppingListView" />
+        <activity android:name=".activities.CreateShoppingList" />
+        <activity android:name=".activities.QueryTasks" />
+        <activity android:name=".activities.QueryEvents" />
+        <activity android:name=".activities.ShoppingListView" />
     </application>
 
 </manifest>

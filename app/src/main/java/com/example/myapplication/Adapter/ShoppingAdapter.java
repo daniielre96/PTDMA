@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,15 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.MainShoppingList;
-import com.example.myapplication.Model.EventModel;
+import com.example.myapplication.fragments.MainShoppingList;
 import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.R;
-import com.example.myapplication.ShoppingListView;
+import com.example.myapplication.activities.ShoppingListView;
 
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
 import java.util.List;
 
 public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHolder> {

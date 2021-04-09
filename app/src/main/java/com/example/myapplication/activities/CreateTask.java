@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
+import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
 
@@ -75,7 +76,9 @@ public class CreateTask extends ListenActivity {
     @Override
     public void getResult(String result) {
 
-        int action = Message.parseMainCreateModifyTask(result);
+        String test = "task name is super task name";
+
+        int action = Message.parseMainCreateModifyTask(test);
 
         switch (action){
             case 0: // UNDEFINED COMMAND
@@ -85,6 +88,7 @@ public class CreateTask extends ListenActivity {
                 openDialog();
                 break;
             case 2: // SET THE NAME OF THE TASK
+                setTaskName(test);
                 break;
             case 3: // CREATE THE TASK
                 break;
@@ -104,5 +108,16 @@ public class CreateTask extends ListenActivity {
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
+
+        Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
+    }
+
+    private void setTaskName(String result){
+
+        String nameOfTask = Message.getAfterString("name is ", result);
+
+        ((TextView)findViewById(R.id.createTaskName)).setText(nameOfTask);
+
+        Voice.instancia().speak(getString(R.string.NameDefined, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 }
