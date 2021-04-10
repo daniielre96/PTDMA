@@ -19,9 +19,12 @@ import android.widget.Toast;
 
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
+import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
+import com.example.myapplication.fragments.MainShoppingList;
+import com.example.myapplication.fragments.MainTasks;
 
 public class CreateTask extends ListenActivity {
 
@@ -76,21 +79,20 @@ public class CreateTask extends ListenActivity {
     @Override
     public void getResult(String result) {
 
-        String test = "task name is super task name";
-
-        int action = Message.parseMainCreateModifyTask(test);
+        int action = Message.parseMainCreateModifyTask(result);
 
         switch (action){
-            case 0: // UNDEFINED COMMAND
+            case 0: // UNDEFINED COMMAND (DONE)
                 undefinedCommand();
                 break;
-            case 1: // HELP
+            case 1: // HELP (DONE)
                 openDialog();
                 break;
-            case 2: // SET THE NAME OF THE TASK
-                setTaskName(test);
+            case 2: // SET THE NAME OF THE TASK (DONE)
+                setTaskName(result);
                 break;
-            case 3: // CREATE THE TASK
+            case 3: // CREATE THE TASK (DONE)
+                createTask();
                 break;
         }
     }
@@ -119,5 +121,22 @@ public class CreateTask extends ListenActivity {
         ((TextView)findViewById(R.id.createTaskName)).setText(nameOfTask);
 
         Voice.instancia().speak(getString(R.string.NameDefined, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+    }
+
+    private void createTask() {
+        String nameOfTask = ((TextView)findViewById(R.id.createTaskName)).getText().toString();
+
+        if(nameOfTask != null){
+            if(MainTasks.existsTask(nameOfTask)){
+                Voice.instancia().speak(getString(R.string.Exists, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            }
+            else{
+                MainTasks.addTask(nameOfTask);
+                finish();
+            }
+        }
+        else{
+            Voice.instancia().speak("Please set the name of the task", TextToSpeech.QUEUE_FLUSH, null, "text");
+        }
     }
 }

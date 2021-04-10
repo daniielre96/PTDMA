@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapter.ToDoAdapter;
+import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.R;
@@ -31,6 +34,7 @@ import com.example.myapplication.comandVoice.Voice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainTasks extends Listen {
 
@@ -38,13 +42,22 @@ public class MainTasks extends Listen {
     private ToDoAdapter tasksAdapter;
     private Dialog dialog;
     private ImageButton helpButton;
+    private boolean deleteAll, delete = false;
+    private ToDoModel taskToDelete;
 
-    private List<ToDoModel> taskList;
+    static private List<ToDoModel> taskList;
+    static private List<ToDoModel> taskListFilter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment, container, false);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        tasksAdapter.setTasks(taskList);
     }
 
     @Override
@@ -93,7 +106,7 @@ public class MainTasks extends Listen {
 
         ToDoModel task1 = new ToDoModel();
         task1.setTask("test task");
-        task1.setStatus(0);
+        task1.setStatus(1);
         task1.setId(0);
         taskList.add(task1);
 
@@ -111,43 +124,60 @@ public class MainTasks extends Listen {
     @Override
     public void getResult(String result) {
 
-        int action = Message.parseMainToDo(result);
+        if(deleteAll && result.contains("yes")){
+            confirmDeleteAllTasks();
+            deleteAll = false;
+        } else if(result.contains("yes") && delete){
+            confirmDeleteTask();
+            delete = false;
+        } else if(delete || deleteAll){
+            Voice.instancia().speak(getString(R.string.DeleteCancelled), TextToSpeech.QUEUE_FLUSH, null, "text");
+            deleteAll = false;
+            delete = false;
+        } else {
 
-        switch (action) {
-            case 0: // UNDEFINED COMMAND (DONE)
-                undefinedCommand();
-                break;
-            case 1: // HELP (DONE)
-                openDialog();
-                break;
-            case 2: // MARK TASK AS DONE (DONE)
-                markTaskAsDone(result);
-                break;
-            case 3: // MARK TASK AS UNDONE (DONE)
-                markTaskAsUndone(result);
-                break;
-            case 4: // MARK ALL TASKS AS DONE (DONE)
-                markTasksAsDone();
-                break;
-            case 5: // MARK ALL TASKS AS UNDONE (DONE)
-                markTasksAsUndone();
-                break;
-            case 6: // DELETE A TASK (DONE)
-                deleteTask(result);
-                break;
-            case 7: // DELETE ALL TASKS (DONE)
-                deleteAllTasks();
-                break;
-            case 8: // CREATE A TASK (DONE)
-                createTask();
-                break;
-            case 9: // MODIFY A TASK (DONE)
-                modifyTask(result);
-                break;
-            case 10: // ENABLE SOUND
-                break;
-            case 11: // DISABLE SOUND
-                break;
+            int action = Message.parseMainToDo(result);
+
+            switch (action) {
+                case 0: // UNDEFINED COMMAND (DONE)
+                    undefinedCommand();
+                    GlobalVars.ringtoneFailure(this.getContext());
+                    break;
+                case 1: // HELP (DONE)
+                    openDialog();
+                    GlobalVars.ringtoneSuccess(this.getContext());
+                    break;
+                case 2: // MARK TASK AS DONE (DONE)
+                    markTaskAsDone(result);
+                    break;
+                case 3: // MARK TASK AS UNDONE (DONE)
+                    markTaskAsUndone(result);
+                    break;
+                case 4: // MARK ALL TASKS AS DONE (DONE)
+                    markTasksAsDone();
+                    break;
+                case 5: // MARK ALL TASKS AS UNDONE (DONE)
+                    markTasksAsUndone();
+                    break;
+                case 6: // DELETE A TASK (DONE)
+                    deleteTask(result);
+                    break;
+                case 7: // DELETE ALL TASKS (DONE)
+                    deleteAllTasks();
+                    break;
+                case 8: // CREATE A TASK (DONE)
+                    createTask();
+                    break;
+                case 9: // MODIFY A TASK (DONE)
+                    modifyTask(result);
+                    break;
+                case 10: // ENABLE SOUND
+                    GlobalVars.setNotificationsEnable(true);
+                    break;
+                case 11: // DISABLE SOUND
+                    GlobalVars.setNotificationsEnable(false);
+                    break;
+            }
         }
     }
 
@@ -190,26 +220,68 @@ public class MainTasks extends Listen {
 
     private void deleteTask(String result){
 
+        delete = true;
+
         String nameOfTask = Message.getAfterString("task ", result);
 
-        ToDoModel task = taskList.stream().filter(t -> t.getTask().equals(nameOfTask)).findFirst().orElse(null);
+        taskToDelete = taskList.stream().filter(t -> t.getTask().equals(nameOfTask)).findFirst().orElse(null);
 
-        if(task != null){ // task with name found
-            taskList.remove(task);
-            tasksAdapter.setTasks(taskList);
+        if(taskToDelete != null){ // task with name found
 
             Voice.instancia().speak(getString(R.string.Delete, "task", nameOfTask), TextToSpeech.QUEUE_FLUSH, null, "text");
+
+            ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
+
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
+                }
+            }, 5000);
         }
         else{ // task not found
             Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
     }
 
-    private void deleteAllTasks(){
-        taskList.clear();
+    private void filterDoneTasks(){
+        taskListFilter = taskList.stream().filter(t -> t.getStatus() == 1).collect(Collectors.toList());
+        tasksAdapter.setTasks(taskListFilter);
+    }
+
+    private void filterUnDoneTasks(){
+        taskListFilter = taskList.stream().filter(t -> t.getStatus() == 0).collect(Collectors.toList());
+        tasksAdapter.setTasks(taskListFilter);
+    }
+
+    private void showAllTasks(){
         tasksAdapter.setTasks(taskList);
+    }
+
+    private void confirmDeleteTask(){
+        taskList.remove(taskToDelete);
+        tasksAdapter.setTasks(taskList);
+    }
+
+    private void deleteAllTasks(){
+
+        deleteAll = true;
 
         Voice.instancia().speak(getString(R.string.DeleteAll, "tasks"), TextToSpeech.QUEUE_FLUSH, null, "text");
+
+        ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
+            }
+        }, 5000);
+    }
+
+    private void confirmDeleteAllTasks(){
+        taskList.clear();
+        tasksAdapter.setTasks(taskList);
     }
 
     private void markTasksAsDone(){
@@ -234,6 +306,7 @@ public class MainTasks extends Listen {
         ToDoModel task = taskList.stream().filter(t -> t.getTask().equals(nameOfTask)).findFirst().orElse(null);
 
         if(task != null){
+            taskList.remove(task);
             task.setStatus(1);
             taskList.set(taskList.indexOf(task), task);
             tasksAdapter.setTasks(taskList);
@@ -260,5 +333,21 @@ public class MainTasks extends Listen {
         else{
             Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
+    }
+
+    static public boolean existsTask(String nameOfTask){
+
+        ToDoModel task = taskList.stream().filter(tl -> tl.getTask().equals(nameOfTask)).findFirst().orElse(null);
+
+        return task != null;
+    }
+
+    static public void addTask(String nameOfTask){
+
+        ToDoModel task = new ToDoModel();
+        task.setId(0);
+        task.setTask(nameOfTask);
+        task.setStatus(0);
+        taskList.add(task);
     }
 }

@@ -90,7 +90,7 @@ public class CreateShoppingList extends ListenActivity {
             case 2: // SET THE NAME OF THE LIST (DONE)
                 setNameList(test);
                 break;
-            case 3: // CREATE THE LIST
+            case 3: // CREATE THE LIST (DONE)
                 createList();
                 break;
         }
@@ -121,7 +121,7 @@ public class CreateShoppingList extends ListenActivity {
     }
 
     private void createList(){
-        String nameOfList = (String) ((TextView)findViewById(R.id.createListName)).getText();
+        String nameOfList = ((TextView)findViewById(R.id.createListName)).getText().toString();
 
         if(nameOfList != null){
             if(MainShoppingList.existsList(nameOfList)){
@@ -129,6 +129,7 @@ public class CreateShoppingList extends ListenActivity {
             }
             else{
                 MainShoppingList.addList(nameOfList);
+                finish();
             }
         }
         else{

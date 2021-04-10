@@ -168,8 +168,10 @@ public class MainEvents extends Listen {
             case 5: // MODIFY AN EVENT
                 break;
             case 6: // ENABLE SOUND
+                GlobalVars.setNotificationsEnable(true);
                 break;
             case 7: // DISABLE SOUND
+                GlobalVars.setNotificationsEnable(false);
                 break;
         }
     }

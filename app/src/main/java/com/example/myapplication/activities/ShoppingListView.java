@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -36,6 +38,8 @@ public class ShoppingListView extends ListenActivity {
     private ToDoAdapter itemAdapter;
     private ImageButton helpButton;
     private Dialog dialog;
+    private boolean delete = false;
+    private ToDoModel elementToDelete;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,23 +102,30 @@ public class ShoppingListView extends ListenActivity {
     @Override
     public void getResult(String result) {
 
-        String test = "add element New ITEM";
+        if(delete && result.contains("yes")){
+            confirmDelete();
+            delete = false;
+        } else if(delete){
+            Voice.instancia().speak(getString(R.string.DeleteCancelled), TextToSpeech.QUEUE_FLUSH, null, "text");
+            delete = false;
+        } else {
 
-        int action = Message.parseShowShoppingList(test);
+            int action = Message.parseShowShoppingList(result);
 
-        switch (action){
-            case 0: // UNDEFINED COMMAND
-                undefinedCommand();
-                break;
-            case 1: // HELP
-                openDialog();
-                break;
-            case 2:  // ADD ELEMENT TO THE LIST
-                addElement(test);
-                break;
-            case 3: // DELETE ELEMENT FROM LIST
-                deleteElement(test);
-                break;
+            switch (action) {
+                case 0: // UNDEFINED COMMAND (DONE)
+                    undefinedCommand();
+                    break;
+                case 1: // HELP (DONE)
+                    openDialog();
+                    break;
+                case 2:  // ADD ELEMENT TO THE LIST (DONE)
+                    addElement(result);
+                    break;
+                case 3: // DELETE ELEMENT FROM LIST
+                    deleteElement(result);
+                    break;
+            }
         }
     }
 
@@ -158,18 +169,32 @@ public class ShoppingListView extends ListenActivity {
     }
 
     private void deleteElement(String result){
+
+        delete = true;
         String nameOfElement = Message.getAfterString("element ", result);
 
-        ToDoModel task = items.stream().filter(it -> it.getTask().equals(nameOfElement)).findFirst().orElse(null);
+        elementToDelete = items.stream().filter(it -> it.getTask().equals(nameOfElement)).findFirst().orElse(null);
 
-        if(task != null){ // task with name found
-            items.remove(task);
-            itemAdapter.setTasks(items);
+        if(elementToDelete != null){ // task with name found
 
             Voice.instancia().speak(getString(R.string.Delete, "element", nameOfElement), TextToSpeech.QUEUE_FLUSH, null, "text");
+
+            startListening();
+
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    stopListening();
+                }
+            }, 10000);
         }
         else{ // item not found
             Voice.instancia().speak(getString(R.string.NotFound, "item"), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
+    }
+
+    private void confirmDelete(){
+        items.remove(elementToDelete);
+        itemAdapter.setTasks(items);
     }
 }

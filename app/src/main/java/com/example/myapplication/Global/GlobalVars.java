@@ -1,6 +1,14 @@
 package com.example.myapplication.Global;
 
 import android.app.Application;
+import android.app.Notification;
+import android.content.Context;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+
+import com.example.myapplication.R;
 
 public class GlobalVars extends Application {
 
@@ -10,6 +18,7 @@ public class GlobalVars extends Application {
     private boolean CreateModifyEventWelcome = false;
     private boolean MainShoppingListWelcome = false;
     private boolean CreateModifyShoppingList = false;
+    static private boolean NotificationsEnable = true;
 
     public boolean isMainToDoWelcome() {
         return MainToDoWelcome;
@@ -57,5 +66,34 @@ public class GlobalVars extends Application {
 
     public void setCreateModifyShoppingList(boolean createModifyShoppingList) {
         CreateModifyShoppingList = createModifyShoppingList;
+    }
+
+    static public void ringtoneSuccess(Context c){
+
+        try{
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(c, notification);
+            r.play();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    static public void ringtoneFailure(Context c){
+
+        try{
+            MediaPlayer media = MediaPlayer.create(c, R.raw.error_notification);
+            media.start();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    static public boolean isNotificationsEnable() {
+        return NotificationsEnable;
+    }
+
+    static public void setNotificationsEnable(boolean notificationsEnable) {
+        NotificationsEnable = notificationsEnable;
     }
 }

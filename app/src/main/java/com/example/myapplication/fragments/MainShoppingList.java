@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,12 +29,16 @@ import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.R;
 import com.example.myapplication.activities.CreateShoppingList;
 import com.example.myapplication.activities.CreateTask;
+import com.example.myapplication.activities.MainMenu;
 import com.example.myapplication.activities.ShoppingListView;
+import com.example.myapplication.activities.SplashScreen;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainShoppingList extends Listen {
 
@@ -40,6 +46,8 @@ public class MainShoppingList extends Listen {
     private ShoppingAdapter shoppingAdapter;
     private Dialog dialog;
     private ImageButton helpButton;
+    private boolean deleteAll, delete = false;
+    private ShoppingModel modelToDelete;
     
     private static List<ShoppingModel> shoppingList;
 
@@ -147,34 +155,50 @@ public class MainShoppingList extends Listen {
     @Override
     public void getResult(String result) {
 
-        int action = Message.parseMainShoppingList(result);
+        if(result.contains("yes") && deleteAll){
+            confirmDeleteAllLists();
+            deleteAll = false;
+        } else if(result.contains("yes") && delete){
+            confirmDeleteList();
+            delete = false;
+        }
+        else if(delete || deleteAll){
+            Voice.instancia().speak(getString(R.string.DeleteCancelled), TextToSpeech.QUEUE_FLUSH, null, "text");
+            deleteAll = false;
+            delete = false;
+        } else {
 
-        switch (action){
-            case 0: // UNDEFINED COMMAND (DONE)
-                undefinedCommand();
-                break;
-            case 1: // HELP (DONE)
-                openDialog();
-                break;
-            case 2: // DELETE A LIST (DONE)
-                deleteList(result);
-                break;
-            case 3: // DELETE ALL LISTS (DONE)
-                deleteAllLists();
-                break;
-            case 4: // CREATE A LIST (DONE)
-                createList();
-                break;
-            case 5: // MODIFY A LIST (DONE)
-                modifyList(result);
-                break;
-            case 6: // SHOW A LIST (DONE)
-                showList(result);
-                break;
-            case 7: // ENABLE SOUND
-                break;
-            case 8: // DISABLE SOUND
-                break;
+            int action = Message.parseMainShoppingList(result);
+
+            switch (action) {
+                case 0: // UNDEFINED COMMAND (DONE)
+                    undefinedCommand();
+                    break;
+                case 1: // HELP (DONE)
+                    openDialog();
+                    break;
+                case 2: // DELETE A LIST (DONE)
+                    deleteList(result);
+                    break;
+                case 3: // DELETE ALL LISTS (DONE)
+                    deleteAllLists();
+                    break;
+                case 4: // CREATE A LIST (DONE)
+                    createList();
+                    break;
+                case 5: // MODIFY A LIST (DONE)
+                    modifyList(result);
+                    break;
+                case 6: // SHOW A LIST (DONE)
+                    showList(result);
+                    break;
+                case 7: // ENABLE SOUND
+                    GlobalVars.setNotificationsEnable(true);
+                    break;
+                case 8: // DISABLE SOUND
+                    GlobalVars.setNotificationsEnable(false);
+                    break;
+            }
         }
     }
 
@@ -195,30 +219,58 @@ public class MainShoppingList extends Listen {
     }
 
     private void deleteAllLists(){
-        shoppingList.clear();
-        shoppingAdapter.setShoppingList(shoppingList);
+
+        deleteAll = true;
 
         Voice.instancia().speak(getString(R.string.DeleteAll, "lists"), TextToSpeech.QUEUE_FLUSH, null, "text");
+
+        ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
+            }
+        }, 5000);
+    }
+
+    private void confirmDeleteAllLists(){
+        shoppingList.clear();
+        shoppingAdapter.setShoppingList(shoppingList);
     }
 
     private void deleteList(String result){
+
+        delete = true;
         String nameOfList = Message.getAfterString("list ", result);
 
-        ShoppingModel shopping = shoppingList.stream().filter(sl -> sl.getTitle().equals(nameOfList)).findFirst().orElse(null);
+        modelToDelete = shoppingList.stream().filter(sl -> sl.getTitle().equals(nameOfList)).findFirst().orElse(null);
 
-        if(shopping != null){ // list with name found
-            shoppingList.remove(shopping);
-            shoppingAdapter.setShoppingList(shoppingList);
+        if(modelToDelete != null){ // list with name found
 
             Voice.instancia().speak(getString(R.string.Delete, "list", nameOfList), TextToSpeech.QUEUE_FLUSH, null, "text");
+
+            ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
+
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
+                }
+            }, 5000);
         }
         else{ // list not found
             Voice.instancia().speak("List not found", TextToSpeech.QUEUE_FLUSH, null, "text");
         }
     }
 
+    private void confirmDeleteList(){
+        shoppingList.remove(modelToDelete);
+        shoppingAdapter.setShoppingList(shoppingList);
+    }
+
     private void createList(){
-        Intent myIntent = new Intent(this.getActivity(), CreateShoppingList.class);
+        Intent myIntent = new Intent(this.getContext(), CreateShoppingList.class);
         startActivity(myIntent);
     }
 
