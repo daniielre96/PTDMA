@@ -66,14 +66,23 @@ public class Message {
         else if(stringContains(message, DISABLE_SINONIMUS)){ // DISABLE SOUND
             return 11;
         }
-        else if(message.contains(("events"))){
+        else if(message.contains(("events"))){ // GO TO EVENTS
             return 12;
         }
-        else if(message.contains("shopping")){
+        else if(message.contains("shopping")){ // GO TO SHOPPING LIST
             return 13;
         }
+        // QUERIES
+        else if(message.contains("show") && message.contains("undone")){ // SHOW UNDONE TASKS
+            return 14;
+        }
+        else if(message.contains("show") && message.contains("done")){ // SHOW DONE TASKS
+            return 15;
+        }
+        else if(message.contains("show") && message.contains("all")){ // SHOW ALL TASKS
+            return 16;
+        }
 
-        // QUERIES TO DO
         return 0;
     }
 

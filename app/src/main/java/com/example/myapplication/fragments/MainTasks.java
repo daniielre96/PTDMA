@@ -173,6 +173,15 @@ public class MainTasks extends Listen {
                     bottomNav = getActivity().findViewById(R.id.navbar);
                     bottomNav.setSelectedItemId(R.id.shopping_list);
                     break;
+                case 14: // SHOW UNDONE TASKS (DONE)
+                    filterUnDoneTasks();
+                    break;
+                case 15: // SHOW DONE TASKS (DONE)
+                    filterDoneTasks();
+                    break;
+                case 16: // SHOW ALL TASKS (DONE)
+                    showAllTasks();
+                    break;
             }
         }
     }
