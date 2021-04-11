@@ -9,8 +9,10 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 
 import com.example.myapplication.R;
+import com.orm.SugarApp;
+import com.orm.SugarContext;
 
-public class GlobalVars extends Application {
+public class GlobalVars extends SugarApp {
 
     private boolean MainToDoWelcome = false;
     private boolean CreateModiftyTaskWelcome = false;
@@ -95,5 +97,17 @@ public class GlobalVars extends Application {
 
     static public void setNotificationsEnable(boolean notificationsEnable) {
         NotificationsEnable = notificationsEnable;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SugarContext.init(this);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        SugarContext.terminate();
     }
 }

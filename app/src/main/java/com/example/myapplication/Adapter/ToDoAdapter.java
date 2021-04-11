@@ -38,6 +38,26 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position){
         ToDoModel item = todoList.get(position);
         holder.task.setText(item.getTask());
+
+        holder.task.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+
+                        holder.task.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                        holder.cardView.setBackgroundColor(Color.parseColor("#CACACA"));
+                        item.setStatus(1);
+                        item.save();
+                    }else{
+                        holder.task.setPaintFlags(0);
+                        holder.cardView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        item.setStatus(0);
+                        item.save();
+                    }
+                }
+            });
+
         holder.task.setChecked(toBoolean(item.getStatus()));
     }
 
@@ -60,22 +80,10 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
 
         ViewHolder(View view){
             super(view);
+
             task = view.findViewById(R.id.todoCheckBox);
             cardView = view.findViewById(R.id.taskLayout);
 
-            task.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){
-                        task.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-                        cardView.setBackgroundColor(Color.parseColor("#CACACA"));
-                    }else{
-                        task.setPaintFlags(0);
-                        cardView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    }
-                }
-            });
         }
 
     }

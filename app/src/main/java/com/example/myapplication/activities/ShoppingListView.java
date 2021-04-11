@@ -19,9 +19,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.Adapter.ItemAdapter;
 import com.example.myapplication.Adapter.ToDoAdapter;
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
+import com.example.myapplication.Model.ItemModel;
+import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.Listen;
@@ -29,45 +32,34 @@ import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ShoppingListView extends ListenActivity {
 
     private String listName;
-    private ArrayList<ToDoModel> items;
+    private List<ItemModel> items;
     private RecyclerView itemsRecyclerView;
-    private ToDoAdapter itemAdapter;
+    private ItemAdapter itemAdapter;
     private ImageButton helpButton;
     private Dialog dialog;
     private boolean delete = false;
-    private ToDoModel elementToDelete;
+    private ItemModel elementToDelete;
+    private long idList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_shoppinglist);
 
-        listName = getIntent().getStringExtra("ListName");
-        items = (ArrayList<ToDoModel>) getIntent().getSerializableExtra("ListItems");
-
-        ((TextView)findViewById(R.id.textToolbar)).setText(listName);
+        idList = getIntent().getLongExtra("ListId", -1);
 
         if(!((GlobalVars)this.getApplication()).isMainShoppingListWelcome())  Voice.instancia().speak(getString(R.string.ShowShoppingList), TextToSpeech.QUEUE_FLUSH, null, "text");
         ((GlobalVars)this.getApplication()).setMainShoppingListWelcome(true);
 
         itemsRecyclerView = findViewById(R.id.tasksRecycle);
         itemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        itemAdapter = new ToDoAdapter(this);
+        itemAdapter = new ItemAdapter(this);
         itemsRecyclerView.setAdapter(itemAdapter);
-
-        ToDoModel task = new ToDoModel();
-        task.setTask("New ITEM");
-        task.setStatus(0);
-        task.setId(1);
-
-        items.add(task);
-
-
-        itemAdapter.setTasks(items);
 
         final ImageButton microButton = findViewById(R.id.fab);
 
@@ -97,6 +89,17 @@ public class ShoppingListView extends ListenActivity {
                 openDialog();
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        listName = ShoppingModel.findById(ShoppingModel.class, idList).getTitle();
+        ((TextView)findViewById(R.id.textToolbar)).setText(listName);
+        items = ItemModel.getByList(idList);
+
+        itemAdapter.setItems(items);
     }
 
     @Override
@@ -133,6 +136,7 @@ public class ShoppingListView extends ListenActivity {
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
     }
 
 
@@ -149,21 +153,24 @@ public class ShoppingListView extends ListenActivity {
     private void addElement(String result){
         String nameOfElement = Message.getAfterString("element ", result);
 
-        ToDoModel task = items.stream().filter(it -> it.getTask().equals(nameOfElement)).findFirst().orElse(null);
+        ItemModel item = items.stream().filter(it -> it.getName().equals(nameOfElement)).findFirst().orElse(null);
 
-        if(task != null){ // Item exists
+        if(item != null){ // Item exists
             Voice.instancia().speak(getString(R.string.Exists, "item"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
         }
         else{ // Item no exists
-              ToDoModel item = new ToDoModel();
-              item.setTask(nameOfElement);
-              item.setStatus(0);
-              item.setId(0);
+              ItemModel model = new ItemModel();
+              model.setName(nameOfElement);
+              model.setStatus(0);
+              model.setIdList(idList);
 
-              items.add(item);
-              itemAdapter.setTasks(items);
+              model.save();
+              items.add(model);
+              itemAdapter.setItems(items);
 
             Voice.instancia().speak(getString(R.string.AddElement), TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneSuccess(this);
         }
 
     }
@@ -173,7 +180,7 @@ public class ShoppingListView extends ListenActivity {
         delete = true;
         String nameOfElement = Message.getAfterString("element ", result);
 
-        elementToDelete = items.stream().filter(it -> it.getTask().equals(nameOfElement)).findFirst().orElse(null);
+        elementToDelete = items.stream().filter(it -> it.getName().equals(nameOfElement)).findFirst().orElse(null);
 
         if(elementToDelete != null){ // task with name found
 
@@ -190,11 +197,14 @@ public class ShoppingListView extends ListenActivity {
         }
         else{ // item not found
             Voice.instancia().speak(getString(R.string.NotFound, "item"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
         }
     }
 
     private void confirmDelete(){
-        items.remove(elementToDelete);
-        itemAdapter.setTasks(items);
+
+        elementToDelete.delete();
+        items = ItemModel.getByList(idList);
+        itemAdapter.setItems(items);
     }
 }

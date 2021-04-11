@@ -46,8 +46,7 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(parentActivity.getContext(), ShoppingListView.class);
-                intent.putExtra("ListName", item.getTitle());
-                intent.putExtra("ListItems", item.getItems());
+                intent.putExtra("ListId", item.getId());
                 activity.startActivity(intent);
             }
         });

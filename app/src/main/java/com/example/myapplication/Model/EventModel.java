@@ -1,20 +1,14 @@
 package com.example.myapplication.Model;
 
+import com.orm.SugarRecord;
+
 import java.util.Date;
 
-public class EventModel {
-    private int id, status;
+public class EventModel extends SugarRecord{
+    private int status;
     private String event;
 
     private Date date;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public int getStatus() {
         return status;

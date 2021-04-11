@@ -57,7 +57,7 @@ public class QueryEvents extends AppCompatActivity {
 
                 event.setEvent("Merry Christmas");
                 event.setStatus(0);
-                event.setId(k);
+                //event.setId(k);
                 eventList.add(event);
                 k++;
 

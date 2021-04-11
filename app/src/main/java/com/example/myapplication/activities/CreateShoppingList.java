@@ -17,10 +17,13 @@ import android.widget.Toast;
 
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
+import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.ListenActivity;
 import com.example.myapplication.comandVoice.Voice;
 import com.example.myapplication.fragments.MainShoppingList;
+
+import java.util.ArrayList;
 
 public class CreateShoppingList extends ListenActivity {
 
@@ -98,6 +101,7 @@ public class CreateShoppingList extends ListenActivity {
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
     }
 
 
@@ -124,16 +128,23 @@ public class CreateShoppingList extends ListenActivity {
         String nameOfList = ((TextView)findViewById(R.id.createListName)).getText().toString();
 
         if(nameOfList != null){
-            if(MainShoppingList.existsList(nameOfList)){
+            if(ShoppingModel.getIfExists(nameOfList) != null){
                 Voice.instancia().speak(getString(R.string.Exists, "list"), TextToSpeech.QUEUE_FLUSH, null, "text");
             }
             else{
-                MainShoppingList.addList(nameOfList);
+                ShoppingModel model = new ShoppingModel();
+                model.setTitle(nameOfList);
+                model.setImage(R.drawable.ic_baseline_shopping_cart_24);
+                model.setItems(new ArrayList<>());
+
+                model.save();
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneSuccess(this);
                 finish();
             }
         }
         else{
             Voice.instancia().speak("Please set the name of the list", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
         }
     }
 }

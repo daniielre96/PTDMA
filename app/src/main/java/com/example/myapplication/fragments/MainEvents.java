@@ -34,6 +34,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Date;
 import java.text.ParseException;
@@ -47,6 +48,7 @@ public class MainEvents extends Listen {
     private EventAdapter eventsAdapter;
     private Dialog dialog;
     private ImageButton helpButton;
+    private BottomNavigationView bottomNav;
 
     private List<EventModel> eventList;
 
@@ -116,7 +118,7 @@ public class MainEvents extends Listen {
 
                 event.setEvent("Event 1");
                 event.setStatus(0);
-                event.setId(k);
+                //event.setId(k);
                 eventList.add(event);
                 k++;
 
@@ -135,7 +137,7 @@ public class MainEvents extends Listen {
 
                 event.setEvent("Passed Event");
                 event.setStatus(0);
-                event.setId(k);
+                //event.setId(k);
                 eventList.add(event);
                 k++;
 
@@ -167,11 +169,19 @@ public class MainEvents extends Listen {
                 break;
             case 5: // MODIFY AN EVENT
                 break;
-            case 6: // ENABLE SOUND
+            case 6: // ENABLE SOUND (DONE)
                 GlobalVars.setNotificationsEnable(true);
                 break;
-            case 7: // DISABLE SOUND
+            case 7: // DISABLE SOUND (DONE)
                 GlobalVars.setNotificationsEnable(false);
+                break;
+            case 8: // GO TO TO DO LIST (DONE)
+                bottomNav = getActivity().findViewById(R.id.navbar);
+                bottomNav.setSelectedItemId(R.id.todo_list);
+                break;
+            case 9: // GO TO SHOPPING LIST (DONE)
+                bottomNav = getActivity().findViewById(R.id.navbar);
+                bottomNav.setSelectedItemId(R.id.shopping_list);
                 break;
         }
     }

@@ -45,7 +45,7 @@ public class QueryTasks extends AppCompatActivity {
         ToDoModel task = new ToDoModel();
         task.setTask("This is a query task");
         task.setStatus(0);
-        task.setId(1);
+        //task.setId(1);
 
         taskList.add(task);
         taskList.add(task);

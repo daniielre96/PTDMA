@@ -127,11 +127,15 @@ public class CreateTask extends ListenActivity {
         String nameOfTask = ((TextView)findViewById(R.id.createTaskName)).getText().toString();
 
         if(nameOfTask != null){
-            if(MainTasks.existsTask(nameOfTask)){
+            if(ToDoModel.getIfExists(nameOfTask) != null){
                 Voice.instancia().speak(getString(R.string.Exists, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
             }
             else{
-                MainTasks.addTask(nameOfTask);
+                ToDoModel task = new ToDoModel();
+                task.setTask(nameOfTask);
+                task.setStatus(0);
+                task.save();
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneSuccess(this);
                 finish();
             }
         }

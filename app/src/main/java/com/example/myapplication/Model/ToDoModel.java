@@ -2,19 +2,15 @@ package com.example.myapplication.Model;
 
 import androidx.annotation.Nullable;
 
+import com.orm.SugarRecord;
+import com.orm.query.Condition;
+import com.orm.query.Select;
+
 import java.io.Serializable;
 
-public class ToDoModel implements Serializable {
-    private int id, status;
+public class ToDoModel extends SugarRecord implements Serializable {
+    private int status;
     private String task;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public int getStatus() {
         return status;
@@ -30,5 +26,9 @@ public class ToDoModel implements Serializable {
 
     public void setTask(String task) {
         this.task = task;
+    }
+
+    public static ToDoModel getIfExists(String name){
+        return Select.from(ToDoModel.class).where(Condition.prop("task").eq(name)).first();
     }
 }

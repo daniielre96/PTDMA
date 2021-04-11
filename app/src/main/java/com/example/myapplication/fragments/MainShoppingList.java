@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapter.ShoppingAdapter;
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
+import com.example.myapplication.Model.ItemModel;
 import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.R;
@@ -34,6 +35,7 @@ import com.example.myapplication.activities.ShoppingListView;
 import com.example.myapplication.activities.SplashScreen;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +50,9 @@ public class MainShoppingList extends Listen {
     private ImageButton helpButton;
     private boolean deleteAll, delete = false;
     private ShoppingModel modelToDelete;
+    private BottomNavigationView bottomNav;
     
-    private static List<ShoppingModel> shoppingList;
+    private List<ShoppingModel> shoppingList;
 
     @Nullable
     @Override
@@ -60,6 +63,9 @@ public class MainShoppingList extends Listen {
     @Override
     public void onStart() {
         super.onStart();
+
+        shoppingList = ShoppingModel.listAll(ShoppingModel.class);
+
         shoppingAdapter.setShoppingList(shoppingList);
     }
 
@@ -111,45 +117,6 @@ public class MainShoppingList extends Listen {
         shoppingAdapter = new ShoppingAdapter(this);
         shoppingRecyclerView.setAdapter(shoppingAdapter);
 
-        ShoppingModel model = new ShoppingModel();
-        ShoppingModel model1 = new ShoppingModel();
-        model1.setId(0);;
-        model.setId(1);
-        model1.setTitle("list test");
-        model.setTitle("Lista 1");
-        model.setImage(R.drawable.ic_baseline_shopping_cart_24);
-        model1.setImage(R.drawable.ic_baseline_shopping_cart_24);
-
-        // Items from shopping List
-
-        ArrayList<ToDoModel> items = new ArrayList<>();
-        ToDoModel task = new ToDoModel();
-        task.setTask("Item 1");
-        task.setStatus(0);
-        task.setId(1);
-
-        items.add(task);
-        items.add(task);
-        items.add(task);
-        items.add(task);        items.add(task);
-        items.add(task);        items.add(task);
-        items.add(task);        items.add(task);
-        items.add(task);
-
-        model.setItems(items);
-        model1.setItems(new ArrayList<>());
-
-        shoppingList.add(model1);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-        shoppingList.add(model);
-
-        shoppingAdapter.setShoppingList(shoppingList);
-
     }
 
     @Override
@@ -198,6 +165,14 @@ public class MainShoppingList extends Listen {
                 case 8: // DISABLE SOUND
                     GlobalVars.setNotificationsEnable(false);
                     break;
+                case 9: // GO TO EVENTS
+                    bottomNav = getActivity().findViewById(R.id.navbar);
+                    bottomNav.setSelectedItemId(R.id.events_list);
+                    break;
+                case 10: // GO TO TO DO LIST
+                    bottomNav = getActivity().findViewById(R.id.navbar);
+                    bottomNav.setSelectedItemId(R.id.todo_list);
+                    break;
             }
         }
     }
@@ -206,6 +181,7 @@ public class MainShoppingList extends Listen {
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
     }
 
     private void openDialog() {
@@ -235,7 +211,9 @@ public class MainShoppingList extends Listen {
     }
 
     private void confirmDeleteAllLists(){
-        shoppingList.clear();
+        ShoppingModel.deleteAll(ShoppingModel.class);
+
+        shoppingList = ShoppingModel.listAll(ShoppingModel.class);
         shoppingAdapter.setShoppingList(shoppingList);
     }
 
@@ -261,11 +239,14 @@ public class MainShoppingList extends Listen {
         }
         else{ // list not found
             Voice.instancia().speak("List not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
     }
 
     private void confirmDeleteList(){
-        shoppingList.remove(modelToDelete);
+        modelToDelete.delete();
+        shoppingList = ShoppingModel.listAll(ShoppingModel.class);
+
         shoppingAdapter.setShoppingList(shoppingList);
     }
 
@@ -286,6 +267,7 @@ public class MainShoppingList extends Listen {
         }
         else{ // list not found
             Voice.instancia().speak("List not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
     }
 
@@ -295,29 +277,12 @@ public class MainShoppingList extends Listen {
 
         if(shopping != null){ // list with name found
             Intent intent = new Intent(this.getActivity(), ShoppingListView.class);
-            intent.putExtra("ListName", shopping.getTitle());
-            intent.putExtra("ListItems", shopping.getItems());
+            intent.putExtra("ListId", shopping.getId());
             startActivity(intent);
         }
         else{ // list not found
             Voice.instancia().speak("List not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
-    }
-
-    static public boolean existsList(String nameOfList){
-        ShoppingModel shopping = shoppingList.stream().filter(sl -> sl.getTitle().equals(nameOfList)).findFirst().orElse(null);
-
-        return shopping != null;
-    }
-
-    static public void addList(String nameOfList){
-
-        ShoppingModel model = new ShoppingModel();
-        model.setId(0);
-        model.setTitle(nameOfList);
-        model.setImage(R.drawable.ic_baseline_shopping_cart_24);
-        model.setItems(new ArrayList<>());
-
-        shoppingList.add(model);
     }
 }

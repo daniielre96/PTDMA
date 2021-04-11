@@ -31,6 +31,8 @@ import com.example.myapplication.R;
 import com.example.myapplication.activities.CreateTask;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.orm.SugarRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +46,9 @@ public class MainTasks extends Listen {
     private ImageButton helpButton;
     private boolean deleteAll, delete = false;
     private ToDoModel taskToDelete;
+    private BottomNavigationView bottomNav;
 
-    static private List<ToDoModel> taskList;
-    static private List<ToDoModel> taskListFilter;
+    private List<ToDoModel> taskList;
 
     @Nullable
     @Override
@@ -57,6 +59,9 @@ public class MainTasks extends Listen {
     @Override
     public void onStart() {
         super.onStart();
+
+        taskList = ToDoModel.listAll(ToDoModel.class);
+
         tasksAdapter.setTasks(taskList);
     }
 
@@ -104,21 +109,6 @@ public class MainTasks extends Listen {
         tasksAdapter = new ToDoAdapter(getContext());
         tasksRecyclerView.setAdapter(tasksAdapter);
 
-        ToDoModel task1 = new ToDoModel();
-        task1.setTask("test task");
-        task1.setStatus(1);
-        task1.setId(0);
-        taskList.add(task1);
-
-        for(int i =0; i < 5; i++){
-            ToDoModel task = new ToDoModel();
-            task.setTask("task " + String.valueOf(i+1));
-            task.setStatus(0);
-            task.setId(i+1);
-            taskList.add(task);
-        }
-
-        tasksAdapter.setTasks(taskList);
     }
 
     @Override
@@ -141,11 +131,9 @@ public class MainTasks extends Listen {
             switch (action) {
                 case 0: // UNDEFINED COMMAND (DONE)
                     undefinedCommand();
-                    GlobalVars.ringtoneFailure(this.getContext());
                     break;
                 case 1: // HELP (DONE)
                     openDialog();
-                    GlobalVars.ringtoneSuccess(this.getContext());
                     break;
                 case 2: // MARK TASK AS DONE (DONE)
                     markTaskAsDone(result);
@@ -171,11 +159,19 @@ public class MainTasks extends Listen {
                 case 9: // MODIFY A TASK (DONE)
                     modifyTask(result);
                     break;
-                case 10: // ENABLE SOUND
+                case 10: // ENABLE SOUND (DONE)
                     GlobalVars.setNotificationsEnable(true);
                     break;
-                case 11: // DISABLE SOUND
+                case 11: // DISABLE SOUND (DONE)
                     GlobalVars.setNotificationsEnable(false);
+                    break;
+                case 12: // GO TO EVENTS
+                    bottomNav = getActivity().findViewById(R.id.navbar);
+                    bottomNav.setSelectedItemId(R.id.events_list);
+                    break;
+                case 13: // GO TO SHOPPING LIST
+                    bottomNav = getActivity().findViewById(R.id.navbar);
+                    bottomNav.setSelectedItemId(R.id.shopping_list);
                     break;
             }
         }
@@ -185,6 +181,7 @@ public class MainTasks extends Listen {
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
     }
 
     private void openDialog() {
@@ -241,25 +238,35 @@ public class MainTasks extends Listen {
         }
         else{ // task not found
             Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
     }
 
     private void filterDoneTasks(){
-        taskListFilter = taskList.stream().filter(t -> t.getStatus() == 1).collect(Collectors.toList());
-        tasksAdapter.setTasks(taskListFilter);
+        taskList = ToDoModel.listAll(ToDoModel.class);
+
+        taskList = taskList.stream().filter(t -> t.getStatus() == 1).collect(Collectors.toList());
+        tasksAdapter.setTasks(taskList);
     }
 
     private void filterUnDoneTasks(){
-        taskListFilter = taskList.stream().filter(t -> t.getStatus() == 0).collect(Collectors.toList());
-        tasksAdapter.setTasks(taskListFilter);
+        taskList = ToDoModel.listAll(ToDoModel.class);
+
+        taskList = taskList.stream().filter(t -> t.getStatus() == 0).collect(Collectors.toList());
+        tasksAdapter.setTasks(taskList);
     }
 
     private void showAllTasks(){
+
+        taskList = ToDoModel.listAll(ToDoModel.class);
+
         tasksAdapter.setTasks(taskList);
     }
 
     private void confirmDeleteTask(){
-        taskList.remove(taskToDelete);
+        taskToDelete.delete();
+        taskList = ToDoModel.listAll(ToDoModel.class);
+
         tasksAdapter.setTasks(taskList);
     }
 
@@ -280,13 +287,18 @@ public class MainTasks extends Listen {
     }
 
     private void confirmDeleteAllTasks(){
-        taskList.clear();
+        ToDoModel.deleteAll(ToDoModel.class);
+        taskList = ToDoModel.listAll(ToDoModel.class);
+
         tasksAdapter.setTasks(taskList);
     }
 
     private void markTasksAsDone(){
 
-        taskList.stream().forEach(t -> t.setStatus(1));
+        taskList.stream().forEach(t ->{
+            t.setStatus(1);
+            t.save();
+        });
         tasksAdapter.setTasks(taskList);
 
         Voice.instancia().speak(getString(R.string.MarkAllTasks), TextToSpeech.QUEUE_FLUSH, null, "text");
@@ -294,7 +306,10 @@ public class MainTasks extends Listen {
 
     private void markTasksAsUndone(){
 
-        taskList.stream().forEach(t -> t.setStatus(0));
+        taskList.stream().forEach(t -> {
+            t.setStatus(0);
+            t.save();
+        });
         tasksAdapter.setTasks(taskList);
 
         Voice.instancia().speak(getString(R.string.UnmarkAllTasks), TextToSpeech.QUEUE_FLUSH, null, "text");
@@ -306,15 +321,16 @@ public class MainTasks extends Listen {
         ToDoModel task = taskList.stream().filter(t -> t.getTask().equals(nameOfTask)).findFirst().orElse(null);
 
         if(task != null){
-            taskList.remove(task);
+
             task.setStatus(1);
-            taskList.set(taskList.indexOf(task), task);
-            tasksAdapter.setTasks(taskList);
+            task.save();
+            tasksAdapter.notifyDataSetChanged();
 
             Voice.instancia().speak(getString(R.string.MarkTask, nameOfTask), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
         else{
             Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
     }
 
@@ -325,29 +341,14 @@ public class MainTasks extends Listen {
 
         if(task != null){
             task.setStatus(0);
-            taskList.set(taskList.indexOf(task), task);
-            tasksAdapter.setTasks(taskList);
+            task.save();
+            tasksAdapter.notifyDataSetChanged();
 
             Voice.instancia().speak(getString(R.string.UnmarkTask, nameOfTask), TextToSpeech.QUEUE_FLUSH, null, "text");
         }
         else{
             Voice.instancia().speak(getString(R.string.NotFound, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
-    }
-
-    static public boolean existsTask(String nameOfTask){
-
-        ToDoModel task = taskList.stream().filter(tl -> tl.getTask().equals(nameOfTask)).findFirst().orElse(null);
-
-        return task != null;
-    }
-
-    static public void addTask(String nameOfTask){
-
-        ToDoModel task = new ToDoModel();
-        task.setId(0);
-        task.setTask(nameOfTask);
-        task.setStatus(0);
-        taskList.add(task);
     }
 }

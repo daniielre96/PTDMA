@@ -66,6 +66,12 @@ public class Message {
         else if(stringContains(message, DISABLE_SINONIMUS)){ // DISABLE SOUND
             return 11;
         }
+        else if(message.contains(("events"))){
+            return 12;
+        }
+        else if(message.contains("shopping")){
+            return 13;
+        }
 
         // QUERIES TO DO
         return 0;
@@ -115,6 +121,12 @@ public class Message {
         }
         else if(stringContains(message, DISABLE_SINONIMUS)){ // DISABLE SOUND
             return 7;
+        }
+        else if(message.contains(("to do list"))){
+            return 8;
+        }
+        else if(message.contains("shopping")){
+            return 9;
         }
 
         // QUERIES TO DO
@@ -178,6 +190,12 @@ public class Message {
         }
         else if(stringContains(message, DISABLE_SINONIMUS)){ // DISABLE SOUND
             return 8;
+        }
+        else if(message.contains(("events"))){
+            return 9;
+        }
+        else if(message.contains("to do list")){
+            return 10;
         }
 
         return 0;
