@@ -3,11 +3,15 @@ package com.example.myapplication.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.provider.CalendarContract;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +19,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +35,10 @@ import com.example.myapplication.Adapter.EventAdapter;
 import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.EventModel;
+import com.example.myapplication.Model.ShoppingModel;
 import com.example.myapplication.R;
+import com.example.myapplication.activities.CreateEvent;
+import com.example.myapplication.activities.CreateTask;
 import com.example.myapplication.comandVoice.Listen;
 import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
@@ -57,6 +65,15 @@ public class MainEvents extends Listen {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.fragment, container, false);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        eventList = EventModel.listAll(EventModel.class);
+
+        eventsAdapter.setEvents(eventList);
     }
 
     @Override
@@ -104,49 +121,6 @@ public class MainEvents extends Listen {
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         eventsAdapter = new EventAdapter(getContext());
         eventsRecyclerView.setAdapter(eventsAdapter);
-
-        // Insertion of actual events
-
-        int k = 1;
-        SimpleDateFormat dateformat = new SimpleDateFormat("dd/MM");
-
-        for(int i=0; i < 5; i++){
-
-            EventModel event = new EventModel();
-            try {
-                event.setDate(dateformat.parse("12/07"));
-
-                event.setEvent("Event 1");
-                event.setStatus(0);
-                //event.setId(k);
-                eventList.add(event);
-                k++;
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Insertion of past events
-
-        for(int i=0; i < 5; i++){
-
-            EventModel event = new EventModel();
-            try {
-                event.setDate(dateformat.parse("01/01"));
-
-                event.setEvent("Passed Event");
-                event.setStatus(0);
-                //event.setId(k);
-                eventList.add(event);
-                k++;
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-
-        eventsAdapter.setEvents(eventList);
     }
 
     @Override
@@ -161,13 +135,16 @@ public class MainEvents extends Listen {
             case 1: // HELP (DONE)
                 openDialog();
                 break;
-            case 2: //  DELETE EVENT
+            case 2: //  DELETE EVENT (DONE)
+                deleteEvent(result);
                 break;
             case 3: // DELETE ALL EVENTS FROM A DAY
                 break;
-            case 4: // CREATE AN EVENT
+            case 4: // CREATE AN EVENT (DONE)
+                createEvent();
                 break;
             case 5: // MODIFY AN EVENT
+                modifyEvent(result);
                 break;
             case 6: // ENABLE SOUND (DONE)
                 GlobalVars.setNotificationsEnable(true);
@@ -200,5 +177,51 @@ public class MainEvents extends Listen {
         dialog.show();
 
         Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
+    }
+
+    private void createEvent() {
+        Intent myIntent = new Intent(this.getActivity(), CreateEvent.class);
+        startActivity(myIntent);
+    }
+
+    private void deleteEvent(String result) {
+        String id = Message.getAfterString("event ", result);
+        int realId = GlobalVars.idWordToInt(id, eventList);
+
+        if(realId != 0) {
+
+            EventModel model = EventModel.findById(EventModel.class, realId);
+            long eventId = model.getEventId();
+
+            ContentResolver cr = getActivity().getContentResolver();
+            Uri deleteUri = null;
+            deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
+            cr.delete(deleteUri, null, null);
+            model.delete();
+            eventList = EventModel.listAll(EventModel.class);
+            eventsAdapter.setEvents(eventList);
+        }
+        else{
+            Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+        }
+
+    }
+
+    private void modifyEvent(String result){
+        String id = Message.getAfterString("event ", result);
+        int realId = GlobalVars.idWordToInt(id, eventList);
+
+        if(realId != 0) {
+
+            EventModel model = EventModel.findById(EventModel.class, realId);
+            long eventId = model.getEventId();
+
+            Intent intent = new Intent(this.getActivity(), CreateEvent.class);
+            intent.putExtra("EventModel", model);
+            startActivity(intent);
+        }
+        else{
+            Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+        }
     }
 }

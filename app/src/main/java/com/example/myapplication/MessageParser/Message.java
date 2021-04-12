@@ -157,8 +157,8 @@ public class Message {
             Matcher matcher = pattern.matcher(message);
             while(matcher.find()){return 3;}
         }
-        else if(message.contains("hour")){ // SET THE HOUR OF THE EVENT
-            Pattern pattern = Pattern.compile("event hour is(.*?)");
+        else if(message.contains("time")){ // SET THE HOUR OF THE EVENT
+            Pattern pattern = Pattern.compile("event time is(.*?)");
             Matcher matcher = pattern.matcher(message);
             while(matcher.find()){return 4;}
         }
@@ -233,7 +233,7 @@ public class Message {
             return 1;
         }
         else if(stringContains(message, ADD_SINONIMUS)){ // ADD ELEMENT TO THE LIST
-            Pattern pattern = Pattern.compile("add element(.*?)");
+            Pattern pattern = Pattern.compile("insert element(.*?)");
             Matcher matcher = pattern.matcher(message);
             while(matcher.find()){return 2;}
         }

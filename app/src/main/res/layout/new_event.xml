@@ -14,6 +14,7 @@
         android:orientation="vertical">
 
         <EditText
+            android:id="@+id/createEventName"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="50dp"
@@ -27,6 +28,7 @@
         </EditText>
 
         <EditText
+            android:id="@+id/createEventDate"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="50dp"
@@ -40,6 +42,7 @@
         </EditText>
 
         <EditText
+            android:id="@+id/createEventTime"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="50dp"

@@ -126,7 +126,7 @@ public class CreateTask extends ListenActivity {
     private void createTask() {
         String nameOfTask = ((TextView)findViewById(R.id.createTaskName)).getText().toString();
 
-        if(nameOfTask != null){
+        if(nameOfTask.length() != 0){
             if(ToDoModel.getIfExists(nameOfTask) != null){
                 Voice.instancia().speak(getString(R.string.Exists, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
             }

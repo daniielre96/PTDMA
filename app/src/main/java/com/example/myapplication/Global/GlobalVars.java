@@ -8,9 +8,17 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
+import com.example.myapplication.Model.EventModel;
+import com.example.myapplication.NumberParser.NumberToWords;
 import com.example.myapplication.R;
 import com.orm.SugarApp;
 import com.orm.SugarContext;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GlobalVars extends SugarApp {
 
@@ -109,5 +117,61 @@ public class GlobalVars extends SugarApp {
     public void onTerminate() {
         super.onTerminate();
         SugarContext.terminate();
+    }
+
+    static public int dayWordToInt(String day){
+
+        for(int i=1; i < 32; i++){
+            if(NumberToWords.convert(i).equalsIgnoreCase(day)) return i;
+        }
+
+        return 0;
+    }
+
+    static public int idWordToInt(String id, List<EventModel> eventList){
+
+        for (EventModel event: eventList) {
+            if(NumberToWords.convert(event.getId()).equalsIgnoreCase(id)) return Math.toIntExact(event.getId());
+        }
+
+        return 0;
+    }
+
+    public static boolean goodDate(String date){
+
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM");
+            format.setLenient(false);
+            format.parse(date);
+        } catch(ParseException e){
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidTime(String time)
+    {
+
+        // Regex to check valid time in 12-hour format.
+        String regexPattern = "((((0[0-9]|[0-9]|1[01]):" + "[0-5][0-9])(\\s))|((0[0-9]|[0-9]|1[01])(\\s)))" + "?(?i)(a.m.|p.m.)";
+
+        // Compile the ReGex
+        Pattern compiledPattern = Pattern.compile(regexPattern);
+
+        // If the time is empty
+        // return false
+        if (time == null) {
+            return false;
+        }
+
+        // Pattern class contains matcher() method
+        // to find matching between given time
+        // and regular expression.
+        Matcher m = compiledPattern.matcher(time);
+
+        // Return if the time
+        // matched the ReGex
+        return m.matches();
     }
 }

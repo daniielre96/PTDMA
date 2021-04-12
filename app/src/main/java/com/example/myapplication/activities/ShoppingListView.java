@@ -61,7 +61,17 @@ public class ShoppingListView extends ListenActivity {
         itemAdapter = new ItemAdapter(this);
         itemsRecyclerView.setAdapter(itemAdapter);
 
-        final ImageButton microButton = findViewById(R.id.fab);
+        helpButton = findViewById(R.id.toolbarRightIcon);
+        dialog = new Dialog(this);
+
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+            }
+        });
+
+        final ImageButton microButton = findViewById(R.id.fab_shopping);
 
         microButton.setOnTouchListener(new View.OnTouchListener() {
 
@@ -79,16 +89,6 @@ public class ShoppingListView extends ListenActivity {
                 return false;
             }
         });
-
-        helpButton = findViewById(R.id.toolbarRightIcon);
-        dialog = new Dialog(this);
-
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog();
-            }
-        });
     }
 
     @Override
@@ -101,6 +101,8 @@ public class ShoppingListView extends ListenActivity {
 
         itemAdapter.setItems(items);
     }
+
+
 
     @Override
     public void getResult(String result) {

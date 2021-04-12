@@ -52,18 +52,13 @@ public class QueryEvents extends AppCompatActivity {
         for(int i=0; i < 5; i++){
 
             EventModel event = new EventModel();
-            try {
-                event.setDate(dateformat.parse("25/12"));
+                event.setDate("patata");
 
                 event.setEvent("Merry Christmas");
                 event.setStatus(0);
                 //event.setId(k);
                 eventList.add(event);
                 k++;
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
 
         eventsAdapter.setEvents(eventList);

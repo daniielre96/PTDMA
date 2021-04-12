@@ -79,9 +79,7 @@ public class CreateShoppingList extends ListenActivity {
     @Override
     public void getResult(String result) {
 
-        String test = "create list";
-
-        int action = Message.parseCreateModifyShoppingList(test);
+        int action = Message.parseCreateModifyShoppingList(result);
 
         switch (action){
             case 0: // UNDEFINED COMMAND (DONE)
@@ -91,7 +89,7 @@ public class CreateShoppingList extends ListenActivity {
                 openDialog();
                 break;
             case 2: // SET THE NAME OF THE LIST (DONE)
-                setNameList(test);
+                setNameList(result);
                 break;
             case 3: // CREATE THE LIST (DONE)
                 createList();
@@ -127,7 +125,7 @@ public class CreateShoppingList extends ListenActivity {
     private void createList(){
         String nameOfList = ((TextView)findViewById(R.id.createListName)).getText().toString();
 
-        if(nameOfList != null){
+        if(nameOfList.length() != 0){
             if(ShoppingModel.getIfExists(nameOfList) != null){
                 Voice.instancia().speak(getString(R.string.Exists, "list"), TextToSpeech.QUEUE_FLUSH, null, "text");
             }

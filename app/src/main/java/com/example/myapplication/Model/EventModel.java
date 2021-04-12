@@ -2,13 +2,16 @@ package com.example.myapplication.Model;
 
 import com.orm.SugarRecord;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class EventModel extends SugarRecord{
+public class EventModel extends SugarRecord implements Serializable {
     private int status;
     private String event;
+    private long eventId;
 
-    private Date date;
+    private String date;
+    private String time;
 
     public int getStatus() {
         return status;
@@ -26,11 +29,27 @@ public class EventModel extends SugarRecord{
         this.event = event;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public long getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(long eventId) {
+        this.eventId = eventId;
     }
 }
