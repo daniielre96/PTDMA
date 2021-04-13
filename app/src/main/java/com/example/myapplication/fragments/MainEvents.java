@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -44,6 +45,8 @@ import com.example.myapplication.comandVoice.Voice;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -57,6 +60,7 @@ public class MainEvents extends Listen {
     private Dialog dialog;
     private ImageButton helpButton;
     private BottomNavigationView bottomNav;
+    long calId;
 
     private List<EventModel> eventList;
 
@@ -70,6 +74,9 @@ public class MainEvents extends Listen {
     @Override
     public void onStart() {
         super.onStart();
+
+        GetCaliD();
+        showEvents();
 
         eventList = EventModel.listAll(EventModel.class);
 
@@ -143,7 +150,7 @@ public class MainEvents extends Listen {
             case 4: // CREATE AN EVENT (DONE)
                 createEvent();
                 break;
-            case 5: // MODIFY AN EVENT
+            case 5: // MODIFY AN EVENT (DONE)
                 modifyEvent(result);
                 break;
             case 6: // ENABLE SOUND (DONE)
@@ -222,6 +229,103 @@ public class MainEvents extends Listen {
         }
         else{
             Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+        }
+    }
+
+    private void GetCaliD(){
+        final String[] EVENT_PROJECTION = new String[] {
+                CalendarContract.Calendars._ID, // 0
+                CalendarContract.Calendars.ACCOUNT_NAME, // 1
+                CalendarContract.Calendars.CALENDAR_DISPLAY_NAME // 2
+        };
+
+// The indices for the projection array above.
+        final int PROJECTION_ID_INDEX = 0;
+        final int PROJECTION_ACCOUNT_NAME_INDEX = 1;
+        final int PROJECTION_DISPLAY_NAME_INDEX = 2;
+
+
+// Run query
+        Cursor cur = null;
+        ContentResolver cr = getActivity().getContentResolver();
+        Uri uri = CalendarContract.Calendars.CONTENT_URI;
+        String selection = "";
+        String[] selectionArgs = new String[] {};
+        cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null);
+
+        while (cur.moveToNext()) {
+            long calID = 0;
+            String displayName = null;
+            String accountName = null;
+            String ownerName = null;
+
+// Get the field values
+            calID = cur.getLong(PROJECTION_ID_INDEX);
+            displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
+            accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
+
+
+// Do something with the values...
+            ((GlobalVars)this.getActivity().getApplication()).setIdCal(calID);
+        }
+    }
+
+    private void showEvents() {
+        final String[] INSTANCE_PROJECTION = new String[] {
+                CalendarContract.Instances.EVENT_ID,       // 0
+                CalendarContract.Instances.BEGIN,         // 1
+                CalendarContract.Instances.TITLE,        // 2
+                CalendarContract.Instances.ORGANIZER    //3
+        };
+
+        // The indices for the projection array above.
+        final int PROJECTION_ID_INDEX = 0;
+        final int PROJECTION_BEGIN_INDEX = 1;
+        final int PROJECTION_TITLE_INDEX = 2;
+        final int PROJECTION_ORGANIZER_INDEX = 3;
+
+        // Specify the date range you want to search for recurring event instances
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.set(Calendar.YEAR, 2021);
+        beginTime.set(Calendar.MONTH, 3);
+        beginTime.set(Calendar.DATE, 12);
+        long startMillis = beginTime.getTimeInMillis();
+        Calendar endTime = Calendar.getInstance();
+        endTime.set(Calendar.YEAR, 2021);
+        endTime.set(Calendar.MONTH, 4);
+        endTime.set(Calendar.DATE, 12);
+        long endMillis = endTime.getTimeInMillis();
+
+
+        // The ID of the recurring event whose instances you are searching for in the Instances table
+        String selection = "";
+        String[] selectionArgs = new String[] {};
+
+        // Construct the query with the desired date range.
+        Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
+        ContentUris.appendId(builder, startMillis);
+        ContentUris.appendId(builder, endMillis);
+
+        // Submit the query
+        Cursor cur =  getActivity().getContentResolver().query(builder.build(), INSTANCE_PROJECTION, selection, selectionArgs, null);
+
+
+        ArrayList<String> events = new ArrayList<>();
+        while (cur.moveToNext()) {
+            // Get the field values
+            long eventID = cur.getLong(PROJECTION_ID_INDEX);
+            long beginVal = cur.getLong(PROJECTION_BEGIN_INDEX);
+            String title = cur.getString(PROJECTION_TITLE_INDEX);
+            String organizer = cur.getString(PROJECTION_ORGANIZER_INDEX);
+
+            // Do something with the values.
+            //Log.i("Calendar", "Event:  " + title);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(beginVal);
+            DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+            //Log.i("Calendar", "Date: " + formatter.format(calendar.getTime()));
+
+            events.add(String.format("Event: %s\nOrganizer: %s\nDate: %s", title, organizer, formatter.format(calendar.getTime())));
         }
     }
 }

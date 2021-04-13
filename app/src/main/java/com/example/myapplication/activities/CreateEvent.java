@@ -251,7 +251,7 @@ public class CreateEvent extends ListenActivity {
     }
 
     private long eventId(String name, String date, String time){
-        long calID = 2;
+        long calID = ((GlobalVars)getApplication()).getIdCal();
         long startMillis = 0;
         ContentValues values = new ContentValues();
         Calendar beginTime = Calendar.getInstance();

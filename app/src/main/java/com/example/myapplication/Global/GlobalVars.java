@@ -28,7 +28,16 @@ public class GlobalVars extends SugarApp {
     private boolean CreateModifyEventWelcome = false;
     private boolean MainShoppingListWelcome = false;
     private boolean CreateModifyShoppingList = false;
+    static private long idCal;
     static private boolean NotificationsEnable = true;
+
+    public long getIdCal() {
+        return idCal;
+    }
+
+    public void setIdCal(long idCal) {
+        this.idCal = idCal;
+    }
 
     public boolean isMainToDoWelcome() {
         return MainToDoWelcome;
