@@ -121,9 +121,16 @@ public class CreateShoppingList extends ListenActivity {
 
         String nameOfList = Message.getAfterString("name is ", result);
 
-        ((TextView)findViewById(R.id.createListName)).setText(nameOfList);
+        if(nameOfList != null && nameOfList.length() > 0){
 
-        Voice.instancia().speak(getString(R.string.NameDefined, "list"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            ((TextView)findViewById(R.id.createListName)).setText(nameOfList);
+
+            Voice.instancia().speak(getString(R.string.NameDefined, "list"), TextToSpeech.QUEUE_FLUSH, null, "text");
+        }
+        else{
+            Voice.instancia().speak("Invalid name", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
+        }
     }
 
     private void createList(){
@@ -132,6 +139,7 @@ public class CreateShoppingList extends ListenActivity {
         if(nameOfList.length() != 0){
             if(ShoppingModel.getIfExists(nameOfList) != null){
                 Voice.instancia().speak(getString(R.string.Exists, "list"), TextToSpeech.QUEUE_FLUSH, null, "text");
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
             }
             else{
                 ShoppingModel model = new ShoppingModel();

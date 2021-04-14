@@ -159,51 +159,63 @@ public class ShoppingListView extends ListenActivity {
     private void addElement(String result){
         String nameOfElement = Message.getAfterString("element ", result);
 
-        ItemModel item = items.stream().filter(it -> it.getName().equals(nameOfElement)).findFirst().orElse(null);
+        if(nameOfElement != null && nameOfElement.length() > 0) {
 
-        if(item != null){ // Item exists
-            Voice.instancia().speak(getString(R.string.Exists, "item"), TextToSpeech.QUEUE_FLUSH, null, "text");
-            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
+            ItemModel item = items.stream().filter(it -> it.getName().equals(nameOfElement)).findFirst().orElse(null);
+
+            if (item != null) { // Item exists
+                Voice.instancia().speak(getString(R.string.Exists, "item"), TextToSpeech.QUEUE_FLUSH, null, "text");
+                if (GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
+            } else { // Item no exists
+
+                ItemModel model = new ItemModel();
+                model.setName(nameOfElement);
+                model.setStatus(0);
+                model.setIdList(idList);
+
+                model.save();
+                items.add(model);
+                itemAdapter.setItems(items);
+
+                Voice.instancia().speak(getString(R.string.AddElement), TextToSpeech.QUEUE_FLUSH, null, "text");
+                if (GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneSuccess(this);
+            }
         }
-        else{ // Item no exists
-              ItemModel model = new ItemModel();
-              model.setName(nameOfElement);
-              model.setStatus(0);
-              model.setIdList(idList);
-
-              model.save();
-              items.add(model);
-              itemAdapter.setItems(items);
-
-            Voice.instancia().speak(getString(R.string.AddElement), TextToSpeech.QUEUE_FLUSH, null, "text");
-            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneSuccess(this);
+        else{
+            Voice.instancia().speak("Invalid name", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if (GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
         }
-
     }
 
     private void deleteElement(String result){
 
         delete = true;
         String nameOfElement = Message.getAfterString("element ", result);
+        
+        if(nameOfElement != null && nameOfElement.length() > 0) {
 
-        elementToDelete = items.stream().filter(it -> it.getName().equals(nameOfElement)).findFirst().orElse(null);
+            elementToDelete = items.stream().filter(it -> it.getName().equals(nameOfElement)).findFirst().orElse(null);
 
-        if(elementToDelete != null){ // task with name found
+            if (elementToDelete != null) { // task with name found
 
-            Voice.instancia().speak(getString(R.string.Delete, "element", nameOfElement), TextToSpeech.QUEUE_FLUSH, null, "text");
+                Voice.instancia().speak(getString(R.string.Delete, "element", nameOfElement), TextToSpeech.QUEUE_FLUSH, null, "text");
 
-            startListening();
+                startListening();
 
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    stopListening();
-                }
-            }, 10000);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        stopListening();
+                    }
+                }, 10000);
+            } else { // item not found
+                Voice.instancia().speak(getString(R.string.NotFound, "item"), TextToSpeech.QUEUE_FLUSH, null, "text");
+                if (GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
+            }
         }
-        else{ // item not found
-            Voice.instancia().speak(getString(R.string.NotFound, "item"), TextToSpeech.QUEUE_FLUSH, null, "text");
-            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
+        else {
+            Voice.instancia().speak("Invalid name", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if (GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
         }
     }
 

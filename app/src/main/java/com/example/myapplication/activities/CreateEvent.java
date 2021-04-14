@@ -148,9 +148,16 @@ public class CreateEvent extends ListenActivity {
 
         String nameOfEvent = Message.getAfterString("name is", result);
 
-        ((TextView)findViewById(R.id.createEventName)).setText(nameOfEvent);
+        if(nameOfEvent != null & nameOfEvent.length() > 0){
 
-        Voice.instancia().speak(getString(R.string.NameDefined, "event"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            ((TextView)findViewById(R.id.createEventName)).setText(nameOfEvent);
+
+            Voice.instancia().speak(getString(R.string.NameDefined, "event"), TextToSpeech.QUEUE_FLUSH, null, "text");
+        }
+        else{
+            Voice.instancia().speak("Invalid name", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
+        }
     }
 
     private void setEventDate(String result){

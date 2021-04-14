@@ -102,6 +102,7 @@ public class CreateTask extends ListenActivity {
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
     }
 
 
@@ -122,17 +123,25 @@ public class CreateTask extends ListenActivity {
 
         String nameOfTask = Message.getAfterString("name is ", result);
 
-        ((TextView)findViewById(R.id.createTaskName)).setText(nameOfTask);
+        if(nameOfTask != null && nameOfTask.length() > 0) {
 
-        Voice.instancia().speak(getString(R.string.NameDefined, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+            ((TextView) findViewById(R.id.createTaskName)).setText(nameOfTask);
+
+            Voice.instancia().speak(getString(R.string.NameDefined, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+        }
+        else{
+            Voice.instancia().speak("Invalid name", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
+        }
     }
 
     private void createTask() {
         String nameOfTask = ((TextView)findViewById(R.id.createTaskName)).getText().toString();
 
-        if(nameOfTask.length() != 0){
+        if(nameOfTask != null && nameOfTask.length() != 0){
             if(ToDoModel.getIfExists(nameOfTask) != null){
                 Voice.instancia().speak(getString(R.string.Exists, "task"), TextToSpeech.QUEUE_FLUSH, null, "text");
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
             }
             else{
                 ToDoModel task = new ToDoModel();
@@ -145,6 +154,7 @@ public class CreateTask extends ListenActivity {
         }
         else{
             Voice.instancia().speak("Please set the name of the task", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
         }
     }
 }

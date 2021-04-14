@@ -11,6 +11,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PersistableBundle;
 import android.provider.CalendarContract;
 import android.speech.tts.TextToSpeech;
@@ -38,6 +40,7 @@ import com.example.myapplication.Global.GlobalVars;
 import com.example.myapplication.MessageParser.Message;
 import com.example.myapplication.Model.EventModel;
 import com.example.myapplication.Model.ShoppingModel;
+import com.example.myapplication.Model.ToDoModel;
 import com.example.myapplication.R;
 import com.example.myapplication.activities.CreateEvent;
 import com.example.myapplication.activities.CreateTask;
@@ -63,6 +66,8 @@ public class MainEvents extends Listen {
     private Dialog dialog;
     private ImageButton helpButton;
     private BottomNavigationView bottomNav;
+    private boolean delete = false;
+    private EventModel modelToDelete;
 
     private List<EventModel> eventList;
 
@@ -132,47 +137,58 @@ public class MainEvents extends Listen {
     @Override
     public void getResult(String result) {
 
-        int action = Message.parseMainEvents(result);
+        if(delete && result.contains("yes")){
+            confirmDeleteEvent();
+            delete = false;
+        }
+        else if(delete){
+            Voice.instancia().speak(getString(R.string.DeleteCancelled), TextToSpeech.QUEUE_FLUSH, null, "text");
+            delete = false;
+        }
+        else {
 
-        switch (action){
-            case 0: // UNDEFINED COMMAND (DONE)
-                undefinedCommand();
-                break;
-            case 1: // HELP (DONE)
-                openDialog();
-                break;
-            case 2: //  DELETE EVENT (DONE)
-                deleteEvent(result);
-                break;
-            case 3: // DELETE ALL EVENTS FROM A DAY
-                break;
-            case 4: // CREATE AN EVENT (DONE)
-                createEvent();
-                break;
-            case 5: // MODIFY AN EVENT (DONE)
-                modifyEvent(result);
-                break;
-            case 6: // ENABLE SOUND (DONE)
-                GlobalVars.setNotificationsEnable(true);
-                break;
-            case 7: // DISABLE SOUND (DONE)
-                GlobalVars.setNotificationsEnable(false);
-                break;
-            case 8: // GO TO TO DO LIST (DONE)
-                bottomNav = getActivity().findViewById(R.id.navbar);
-                bottomNav.setSelectedItemId(R.id.todo_list);
-                break;
-            case 9: // GO TO SHOPPING LIST (DONE)
-                bottomNav = getActivity().findViewById(R.id.navbar);
-                bottomNav.setSelectedItemId(R.id.shopping_list);
-                break;
-            case 10: // SHOW TODAY EVENTS
-                showTodayEvents();
-                break;
-            case 11: // SHOW WEEK EVENTS
-                showEvents();
-                eventsAdapter.setEvents(eventList);
-                break;
+            int action = Message.parseMainEvents(result);
+
+            switch (action) {
+                case 0: // UNDEFINED COMMAND (DONE)
+                    undefinedCommand();
+                    break;
+                case 1: // HELP (DONE)
+                    openDialog();
+                    break;
+                case 2: //  DELETE EVENT (DONE)
+                    deleteEvent(result);
+                    break;
+                case 3: // DELETE ALL EVENTS FROM A DAY
+                    break;
+                case 4: // CREATE AN EVENT (DONE)
+                    createEvent();
+                    break;
+                case 5: // MODIFY AN EVENT (DONE)
+                    modifyEvent(result);
+                    break;
+                case 6: // ENABLE SOUND (DONE)
+                    GlobalVars.setNotificationsEnable(true);
+                    break;
+                case 7: // DISABLE SOUND (DONE)
+                    GlobalVars.setNotificationsEnable(false);
+                    break;
+                case 8: // GO TO TO DO LIST (DONE)
+                    bottomNav = getActivity().findViewById(R.id.navbar);
+                    bottomNav.setSelectedItemId(R.id.todo_list);
+                    break;
+                case 9: // GO TO SHOPPING LIST (DONE)
+                    bottomNav = getActivity().findViewById(R.id.navbar);
+                    bottomNav.setSelectedItemId(R.id.shopping_list);
+                    break;
+                case 10: // SHOW TODAY EVENTS
+                    showTodayEvents();
+                    break;
+                case 11: // SHOW WEEK EVENTS
+                    showEvents();
+                    eventsAdapter.setEvents(eventList);
+                    break;
+            }
         }
     }
 
@@ -205,29 +221,45 @@ public class MainEvents extends Listen {
         String id = Message.getAfterString("event ", result);
         try {
             int realId = Integer.parseInt(id);
-            if(realId != 0) {
 
-                EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
-                long eventId = model.getEventId();
+            modelToDelete = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
 
-                ContentResolver cr = getActivity().getContentResolver();
-                Uri deleteUri = null;
-                deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
-                cr.delete(deleteUri, null, null);
-                model.delete();
-                showEvents();
-                eventsAdapter.setEvents(eventList);
+            if(modelToDelete != null){ // event found
+
+                Voice.instancia().speak(getString(R.string.Delete, "event", String.valueOf(modelToDelete.getId())), TextToSpeech.QUEUE_FLUSH, null, "text");
+
+                ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
+
+                delete = true;
+
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).stopListening();
+                    }
+                }, 5000);
             }
-            else{
+            else{ // event not found
                 Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
                 if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
             }
 
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException e) { // event not found
             Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
             if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
 
+    }
+
+    private void confirmDeleteEvent(){
+        long eventId = modelToDelete.getEventId();
+
+        ContentResolver cr = getActivity().getContentResolver();
+        Uri deleteUri = null;
+        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
+        cr.delete(deleteUri, null, null);
+        showEvents();
+        eventsAdapter.setEvents(eventList);
     }
 
     private void modifyEvent(String result){
@@ -236,20 +268,20 @@ public class MainEvents extends Listen {
         try{
             int realId = Integer.parseInt(id);
 
-            if(realId != 0) {
+            EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
 
-                EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
+            if(model != null) { // event found
                 long eventId = model.getEventId();
 
                 Intent intent = new Intent(this.getActivity(), CreateEvent.class);
                 intent.putExtra("EventModel", model);
                 startActivity(intent);
             }
-            else{
+            else{ // event not found
                 Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
                 if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
             }
-        } catch (final NumberFormatException e){
+        } catch (final NumberFormatException e){ // event not found
             Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
             if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }

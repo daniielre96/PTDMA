@@ -166,11 +166,11 @@ public class MainTasks extends Listen {
                 case 11: // DISABLE SOUND (DONE)
                     GlobalVars.setNotificationsEnable(false);
                     break;
-                case 12: // GO TO EVENTS
+                case 12: // GO TO EVENTS (DONE)
                     bottomNav = getActivity().findViewById(R.id.navbar);
                     bottomNav.setSelectedItemId(R.id.events_list);
                     break;
-                case 13: // GO TO SHOPPING LIST
+                case 13: // GO TO SHOPPING LIST (DONE)
                     bottomNav = getActivity().findViewById(R.id.navbar);
                     bottomNav.setSelectedItemId(R.id.shopping_list);
                     break;
@@ -230,8 +230,6 @@ public class MainTasks extends Listen {
 
     private void deleteTask(String result){
 
-        delete = true;
-
         String nameOfTask = Message.getAfterString("task ", result);
 
         taskToDelete = taskList.stream().filter(t -> t.getTask().equals(nameOfTask)).findFirst().orElse(null);
@@ -239,6 +237,7 @@ public class MainTasks extends Listen {
         if(taskToDelete != null){ // task with name found
 
             Voice.instancia().speak(getString(R.string.Delete, "task", nameOfTask), TextToSpeech.QUEUE_FLUSH, null, "text");
+            delete = true;
 
             ((Listen)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container)).startListening();
 
