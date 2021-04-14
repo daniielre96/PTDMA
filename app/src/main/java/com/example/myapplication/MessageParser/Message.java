@@ -139,6 +139,9 @@ public class Message {
         } else if (message.contains("show") && message.contains("today")){ // SHOW TODAY EVENTS
             return 10;
         }
+        else if(message.contains("show") && message.contains("all")){ // SHOW ALL EVENTS
+            return 11;
+        }
 
         return 0;
     }

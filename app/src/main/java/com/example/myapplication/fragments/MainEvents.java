@@ -47,6 +47,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.ParseException;
@@ -164,8 +166,13 @@ public class MainEvents extends Listen {
                 bottomNav = getActivity().findViewById(R.id.navbar);
                 bottomNav.setSelectedItemId(R.id.shopping_list);
                 break;
-            case 10:
+            case 10: // SHOW TODAY EVENTS
                 showTodayEvents();
+                break;
+            case 11: // SHOW WEEK EVENTS
+                showEvents();
+                eventsAdapter.setEvents(eventList);
+                break;
         }
     }
 
@@ -173,6 +180,7 @@ public class MainEvents extends Listen {
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
     }
 
     private void openDialog() {
@@ -195,42 +203,55 @@ public class MainEvents extends Listen {
 
     private void deleteEvent(String result) {
         String id = Message.getAfterString("event ", result);
-        int realId = GlobalVars.idWordToInt(id, eventList);
+        try {
+            int realId = Integer.parseInt(id);
+            if(realId != 0) {
 
-        if(realId != 0) {
+                EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
+                long eventId = model.getEventId();
 
-            EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
-            long eventId = model.getEventId();
+                ContentResolver cr = getActivity().getContentResolver();
+                Uri deleteUri = null;
+                deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
+                cr.delete(deleteUri, null, null);
+                model.delete();
+                showEvents();
+                eventsAdapter.setEvents(eventList);
+            }
+            else{
+                Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
+            }
 
-            ContentResolver cr = getActivity().getContentResolver();
-            Uri deleteUri = null;
-            deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
-            cr.delete(deleteUri, null, null);
-            model.delete();
-            showEvents();
-            eventsAdapter.setEvents(eventList);
-        }
-        else{
+        } catch (final NumberFormatException e) {
             Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
 
     }
 
     private void modifyEvent(String result){
         String id = Message.getAfterString("event ", result);
-        int realId = GlobalVars.idWordToInt(id, eventList);
 
-        if(realId != 0) {
+        try{
+            int realId = Integer.parseInt(id);
 
-            EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
-            long eventId = model.getEventId();
+            if(realId != 0) {
 
-            Intent intent = new Intent(this.getActivity(), CreateEvent.class);
-            intent.putExtra("EventModel", model);
-            startActivity(intent);
-        }
-        else{
+                EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
+                long eventId = model.getEventId();
+
+                Intent intent = new Intent(this.getActivity(), CreateEvent.class);
+                intent.putExtra("EventModel", model);
+                startActivity(intent);
+            }
+            else{
+                Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
+            }
+        } catch (final NumberFormatException e){
             Voice.instancia().speak("Event not found", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this.getContext());
         }
     }
 
@@ -288,11 +309,15 @@ public class MainEvents extends Listen {
         final int PROJECTION_DATE = 4;
 
         // Specify the date range you want to search for recurring event instances
+        LocalDate currentDate = LocalDate.now();
+        //Adding one week to the current date
+        LocalDate result = currentDate.plus(7, ChronoUnit.DAYS);
         Calendar beginTime = Calendar.getInstance();
-        beginTime.set(2021, 3, 12, 0, 0, 0);
+        Date date = new Date();
+        beginTime.set(2021, currentDate.getMonthValue()-1, currentDate.getDayOfMonth(), 0, 0, 0);
         long startMillis = beginTime.getTimeInMillis();
         Calendar endTime = Calendar.getInstance();
-        endTime.set(2021, 3, 16, 23, 59, 59);
+        endTime.set(2021, result.getMonthValue()-1, result.getDayOfMonth(), 23, 59, 59);
         long endMillis = endTime.getTimeInMillis();
 
 

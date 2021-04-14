@@ -127,6 +127,7 @@ public class CreateEvent extends ListenActivity {
 
     private void undefinedCommand() {
         Voice.instancia().speak(getString(R.string.UndefinedCommand), TextToSpeech.QUEUE_FLUSH, null, "text");
+        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
     }
 
 
@@ -181,13 +182,16 @@ public class CreateEvent extends ListenActivity {
                     Voice.instancia().speak(getString(R.string.EventDateDefined), TextToSpeech.QUEUE_FLUSH, null, "text");
                 } else{
                     Voice.instancia().speak("Invalid date", TextToSpeech.QUEUE_FLUSH, null, "text");
+                    if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
                 }
             } catch (ParseException e) {
                 Voice.instancia().speak("Invalid date", TextToSpeech.QUEUE_FLUSH, null, "text");
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
             }
         }
         else{
             Voice.instancia().speak("Invalid date", TextToSpeech.QUEUE_FLUSH, null, "text");
+            if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
         }
     }
 
@@ -221,6 +225,7 @@ public class CreateEvent extends ListenActivity {
                     }
                     else{
                         Voice.instancia().speak("Insertion to calendar fail", TextToSpeech.QUEUE_FLUSH, null, "text");
+                        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
                     }
                 }
                 else{
@@ -231,11 +236,13 @@ public class CreateEvent extends ListenActivity {
                     }
                     else{
                         Voice.instancia().speak("Insertion to calendar fail", TextToSpeech.QUEUE_FLUSH, null, "text");
+                        if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
                     }
                 }
             }
             else{
                 Voice.instancia().speak("Invalid date", TextToSpeech.QUEUE_FLUSH, null, "text");
+                if(GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneFailure(this);
             }
         }
         else{
@@ -301,17 +308,5 @@ public class CreateEvent extends ListenActivity {
                 int rows = cr.update(updateUri, val, null, null);
                 return 1;
             }
-    }
-
-
-    private void modifyEvent(){
-        ContentResolver cr = getContentResolver();
-        ContentValues values = new ContentValues();
-        Uri updateUri = null;
-        // The new title for the event
-        values.put(CalendarContract.Events.TITLE, "Kickboxing");
-        updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, model.getEventId());
-        int rows = cr.update(updateUri, values, null, null);
-
     }
 }
