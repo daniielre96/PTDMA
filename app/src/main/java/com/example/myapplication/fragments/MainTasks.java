@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -194,12 +195,15 @@ public class MainTasks extends Listen {
     }
 
     private void openDialog() {
-        dialog.setContentView(R.layout.help_dialog);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.help_dialog, null);
+        TextView editText = (TextView) v.findViewById(R.id.helpText);
+        editText.setText(R.string.MainToDoHelp);
+        dialog.setContentView(v);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
-
         Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 

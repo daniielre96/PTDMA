@@ -131,10 +131,10 @@ public class Message {
         else if(stringContains(message, DISABLE_SINONIMUS)){ // DISABLE SOUND
             return 7;
         }
-        else if(message.contains(("to do list"))){
+        else if(message.contains(("to do list"))){ // GO TO TO DO LIST
             return 8;
         }
-        else if(message.contains("shopping")){
+        else if(message.contains("shopping")){ // GO TO SHOPPING LIST
             return 9;
         }
 

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,7 +12,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -41,6 +44,7 @@ public class CreateEvent extends ListenActivity {
     private ImageButton helpButton;
     private Dialog dialog;
     private EventModel model;
+    private boolean modifyEvent = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,7 @@ public class CreateEvent extends ListenActivity {
         model = (EventModel) getIntent().getSerializableExtra("EventModel");
 
         if(model != null) {
+            this.modifyEvent = true;
             ((TextView)findViewById(R.id.createEventName)).setText(model.getEvent());
             ((TextView)findViewById(R.id.createEventDate)).setText(model.getDate());
             ((TextView)findViewById(R.id.createEventTime)).setText(model.getTime());
@@ -126,12 +131,15 @@ public class CreateEvent extends ListenActivity {
 
 
     private void openDialog() {
-        dialog.setContentView(R.layout.help_dialog);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.help_dialog, null);
+        TextView editText = (TextView) v.findViewById(R.id.helpText);
+        editText.setText(R.string.CreateModifyEventHelp);
+        dialog.setContentView(v);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
-
         Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 
@@ -208,13 +216,6 @@ public class CreateEvent extends ListenActivity {
                 if(GlobalVars.isValidTime(timeOfEvent)){
                     long eventId = eventId(nameOfEvent, dateOfEvent, timeOfEvent);
                     if(eventId != -1) {
-                        EventModel event = new EventModel();
-                        event.setStatus(0);
-                        event.setEvent(nameOfEvent);
-                        event.setDate(dateOfEvent);
-                        event.setTime(timeOfEvent);
-                        event.setEventId(eventId);
-                        event.save();
                         if (GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneSuccess(this);
                         finish();
                     }
@@ -225,13 +226,6 @@ public class CreateEvent extends ListenActivity {
                 else{
                     long eventId = eventId(nameOfEvent, dateOfEvent, "all day");
                     if(eventId != -1) {
-                        EventModel event = new EventModel();
-                        event.setStatus(0);
-                        event.setEvent(nameOfEvent);
-                        event.setDate(dateOfEvent);
-                        event.setTime("all day");
-                        event.setEventId(eventId);
-                        event.save();
                         if (GlobalVars.isNotificationsEnable()) GlobalVars.ringtoneSuccess(this);
                         finish();
                     }
@@ -289,10 +283,35 @@ public class CreateEvent extends ListenActivity {
             values.put(CalendarContract.Events.TITLE, name);
             values.put(CalendarContract.Events.CALENDAR_ID, calID);
             values.put(CalendarContract.Events.EVENT_TIMEZONE, "Europe/Madrid");
-            Uri uri = getContentResolver().insert(CalendarContract.Events.CONTENT_URI, values);
 
+            if(!modifyEvent){
+                Uri uri = getContentResolver().insert(CalendarContract.Events.CONTENT_URI, values);
 // get the event ID that is the last element in the Uri
-            return Long.parseLong(uri.getLastPathSegment());
+                return Long.parseLong(uri.getLastPathSegment());
+            }
+            else{
+                ContentResolver cr = getContentResolver();
+                ContentValues val = new ContentValues();
+                Uri updateUri = null;
+                // The new title for the event
+                val.put(CalendarContract.Events.TITLE, name);
+                val.put(CalendarContract.Events.DTSTART, startMillis);
+                val.put(CalendarContract.Events.DTEND, startMillis);
+                updateUri = ContentUris.withAppendedId(Uri.parse("content://com.android.calendar/events"), model.getEventId());
+                int rows = cr.update(updateUri, val, null, null);
+                return 1;
+            }
+    }
+
+
+    private void modifyEvent(){
+        ContentResolver cr = getContentResolver();
+        ContentValues values = new ContentValues();
+        Uri updateUri = null;
+        // The new title for the event
+        values.put(CalendarContract.Events.TITLE, "Kickboxing");
+        updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, model.getEventId());
+        int rows = cr.update(updateUri, values, null, null);
 
     }
 }

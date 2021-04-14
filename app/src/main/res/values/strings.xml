@@ -40,23 +40,29 @@
     <string name="UnmarkTask">Task %1$s has been marked as undone</string>
     <string name="MarkAllTasks">All tasks have been marked as done</string>
     <string name="UnmarkAllTasks">All tasks have been marked as undone</string>
+    <string name="MainToDoHelp">" Help me\n Unmark all tasks\n Mark all tasks\n Mark task X as done\n Unmark task X as undone\n Delete task X\n Delete all tasks\n Create a task\n Modify event X\n Enable sound\n Disable sound\n Go to events\n Go to shopping list\n Show undone tasks\n Show done tasks\n Show all tasks"</string>
 
     <!-- CreateModifyTask -->
 
     <string name="CreateModifyTaskWelcome">Welcome to the creation or modification of a task, configure the name of your task</string>
+    <string name="CreateModifyTaskHelp">" Help me\n Task name is X\n Create Task"</string>
 
     <!-- MainEvents -->
     <string name="MainEventsWelcome">Welcome to Events, where you can create, modify, query, or delete events</string>
+    <string name="MainEventsHelp">" Help me\n Delete event X\n Create event\n Modify event\n Enable sound\n Disable sound\n Go to to do list\n Go to shopping list"</string>
 
     <!-- CreateModifyEvent -->
 
     <string name="CrateModifyEventWelcome">Welcome to creating or modifying an event, set the name, the date and the time of your event</string>
     <string name="EventDateDefined">Event date defined</string>
     <string name="EventHourDefined">Event hour defined</string>
+    <string name="CreateModifyEventHelp">" Help me\n Event name is X\n Event date is X\n Event time is X\n Create event"</string>
+
 
     <!-- MainShoppingList -->
 
     <string name="MainShoppingListWelcome">Welcome to the sopping list, where you can create, modify, or delete a shopping list </string>
+    <string name="MainShoppingListHelp">" Delete all lists\n Delete list X\n Create list\n Modify list X\n Show list X\n Enable sound\n Disable sound\n Go to events\n Go to to do list"</string>
 
     <!-- CreateShoppingList -->
 

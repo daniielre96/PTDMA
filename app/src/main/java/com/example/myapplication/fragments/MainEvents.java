@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.CalendarContract;
 import android.speech.tts.TextToSpeech;
+import android.util.EventLog;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -60,7 +61,6 @@ public class MainEvents extends Listen {
     private Dialog dialog;
     private ImageButton helpButton;
     private BottomNavigationView bottomNav;
-    long calId;
 
     private List<EventModel> eventList;
 
@@ -77,9 +77,6 @@ public class MainEvents extends Listen {
 
         GetCaliD();
         showEvents();
-
-        eventList = EventModel.listAll(EventModel.class);
-
         eventsAdapter.setEvents(eventList);
     }
 
@@ -177,12 +174,15 @@ public class MainEvents extends Listen {
     }
 
     private void openDialog() {
-        dialog.setContentView(R.layout.help_dialog);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.help_dialog, null);
+        TextView editText = (TextView) v.findViewById(R.id.helpText);
+        editText.setText(R.string.MainEventsHelp);
+        dialog.setContentView(v);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
-
         Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 
@@ -197,7 +197,7 @@ public class MainEvents extends Listen {
 
         if(realId != 0) {
 
-            EventModel model = EventModel.findById(EventModel.class, realId);
+            EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
             long eventId = model.getEventId();
 
             ContentResolver cr = getActivity().getContentResolver();
@@ -205,7 +205,7 @@ public class MainEvents extends Listen {
             deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
             cr.delete(deleteUri, null, null);
             model.delete();
-            eventList = EventModel.listAll(EventModel.class);
+            showEvents();
             eventsAdapter.setEvents(eventList);
         }
         else{
@@ -220,7 +220,7 @@ public class MainEvents extends Listen {
 
         if(realId != 0) {
 
-            EventModel model = EventModel.findById(EventModel.class, realId);
+            EventModel model = eventList.stream().filter(ev -> ev.getId() == realId).findFirst().orElse(null);
             long eventId = model.getEventId();
 
             Intent intent = new Intent(this.getActivity(), CreateEvent.class);
@@ -239,13 +239,13 @@ public class MainEvents extends Listen {
                 CalendarContract.Calendars.CALENDAR_DISPLAY_NAME // 2
         };
 
-// The indices for the projection array above.
+        // The indices for the projection array above.
         final int PROJECTION_ID_INDEX = 0;
         final int PROJECTION_ACCOUNT_NAME_INDEX = 1;
         final int PROJECTION_DISPLAY_NAME_INDEX = 2;
 
 
-// Run query
+        // Run query
         Cursor cur = null;
         ContentResolver cr = getActivity().getContentResolver();
         Uri uri = CalendarContract.Calendars.CONTENT_URI;
@@ -259,13 +259,13 @@ public class MainEvents extends Listen {
             String accountName = null;
             String ownerName = null;
 
-// Get the field values
+            // Get the field values
             calID = cur.getLong(PROJECTION_ID_INDEX);
             displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
             accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
 
 
-// Do something with the values...
+            // Do something with the values...
             ((GlobalVars)this.getActivity().getApplication()).setIdCal(calID);
         }
     }
@@ -275,7 +275,7 @@ public class MainEvents extends Listen {
                 CalendarContract.Instances.EVENT_ID,       // 0
                 CalendarContract.Instances.BEGIN,         // 1
                 CalendarContract.Instances.TITLE,        // 2
-                CalendarContract.Instances.ORGANIZER    //3
+                CalendarContract.Instances.ORGANIZER
         };
 
         // The indices for the projection array above.
@@ -283,17 +283,14 @@ public class MainEvents extends Listen {
         final int PROJECTION_BEGIN_INDEX = 1;
         final int PROJECTION_TITLE_INDEX = 2;
         final int PROJECTION_ORGANIZER_INDEX = 3;
+        final int PROJECTION_DATE = 4;
 
         // Specify the date range you want to search for recurring event instances
         Calendar beginTime = Calendar.getInstance();
-        beginTime.set(Calendar.YEAR, 2021);
-        beginTime.set(Calendar.MONTH, 3);
-        beginTime.set(Calendar.DATE, 12);
+        beginTime.set(2021, 3, 12, 0, 0, 0);
         long startMillis = beginTime.getTimeInMillis();
         Calendar endTime = Calendar.getInstance();
-        endTime.set(Calendar.YEAR, 2021);
-        endTime.set(Calendar.MONTH, 4);
-        endTime.set(Calendar.DATE, 12);
+        endTime.set(2021, 3, 16, 23, 59, 59);
         long endMillis = endTime.getTimeInMillis();
 
 
@@ -307,10 +304,12 @@ public class MainEvents extends Listen {
         ContentUris.appendId(builder, endMillis);
 
         // Submit the query
-        Cursor cur =  getActivity().getContentResolver().query(builder.build(), INSTANCE_PROJECTION, selection, selectionArgs, null);
+        Cursor cur =  getActivity().getContentResolver().query(builder.build(), INSTANCE_PROJECTION, selection, selectionArgs, CalendarContract.Instances.BEGIN + " ASC");
 
 
-        ArrayList<String> events = new ArrayList<>();
+        eventList = new ArrayList<EventModel>();
+
+        long i = 1;
         while (cur.moveToNext()) {
             // Get the field values
             long eventID = cur.getLong(PROJECTION_ID_INDEX);
@@ -318,14 +317,23 @@ public class MainEvents extends Listen {
             String title = cur.getString(PROJECTION_TITLE_INDEX);
             String organizer = cur.getString(PROJECTION_ORGANIZER_INDEX);
 
+            EventModel model = new EventModel();
+            model.setId(i);
+            model.setEvent(title);
+
             // Do something with the values.
             //Log.i("Calendar", "Event:  " + title);
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(beginVal);
-            DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-            //Log.i("Calendar", "Date: " + formatter.format(calendar.getTime()));
+            DateFormat formatter = new SimpleDateFormat("dd/MM");
+            model.setDate(formatter.format(calendar.getTime()));
+            model.setEventId(eventID);
+            model.setStatus(0);
+            formatter = new SimpleDateFormat("hh:mm aa");
+            model.setTime(formatter.format(calendar.getTime()).replace("AM", "a.m.").replace("PM", "p.m."));
 
-            events.add(String.format("Event: %s\nOrganizer: %s\nDate: %s", title, organizer, formatter.format(calendar.getTime())));
+            eventList.add(model);
+            i++;
         }
     }
 }
