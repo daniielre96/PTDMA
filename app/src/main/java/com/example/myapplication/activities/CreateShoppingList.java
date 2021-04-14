@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -104,12 +105,15 @@ public class CreateShoppingList extends ListenActivity {
 
 
     private void openDialog() {
-        dialog.setContentView(R.layout.help_dialog);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.help_dialog, null);
+        TextView editText = (TextView) v.findViewById(R.id.helpText);
+        editText.setText(R.string.CreateModifyShoppingListHelp);
+        dialog.setContentView(v);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setDimAmount(0.2f);
         dialog.getWindow().getAttributes().gravity = Gravity.TOP;
         dialog.show();
-
         Voice.instancia().speak(getString(R.string.HelpMe), TextToSpeech.QUEUE_FLUSH, null, "text");
     }
 

@@ -136,9 +136,10 @@ public class Message {
         }
         else if(message.contains("shopping")){ // GO TO SHOPPING LIST
             return 9;
+        } else if (message.contains("show") && message.contains("today")){ // SHOW TODAY EVENTS
+            return 10;
         }
 
-        // QUERIES TO DO
         return 0;
     }
 

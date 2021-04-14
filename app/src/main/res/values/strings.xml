@@ -67,10 +67,12 @@
     <!-- CreateShoppingList -->
 
     <string name="CreateModifyShoppingList">Welcome to creating or modifying a shopping list, configure the name of your list</string>
+    <string name="CreateModifyShoppingListHelp">" Help me\n List name is X\n Create the list"</string>
 
     <!-- ShowShoppingList -->
 
     <string name="ShowShoppingList">Welcome to the %1%s list, where you can add or delete items</string>
     <string name="AddElement">Element added correctly</string>
+    <string name="ShowShoppingListHelp">" Help me\n Insert element X\n Delete element X"</string>
 
 </resources>

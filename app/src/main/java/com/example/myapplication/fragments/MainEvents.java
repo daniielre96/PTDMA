@@ -164,6 +164,8 @@ public class MainEvents extends Listen {
                 bottomNav = getActivity().findViewById(R.id.navbar);
                 bottomNav.setSelectedItemId(R.id.shopping_list);
                 break;
+            case 10:
+                showTodayEvents();
         }
     }
 
@@ -335,5 +337,75 @@ public class MainEvents extends Listen {
             eventList.add(model);
             i++;
         }
+    }
+
+    private void showTodayEvents(){
+        final String[] INSTANCE_PROJECTION = new String[] {
+                CalendarContract.Instances.EVENT_ID,       // 0
+                CalendarContract.Instances.BEGIN,         // 1
+                CalendarContract.Instances.TITLE,        // 2
+                CalendarContract.Instances.ORGANIZER
+        };
+
+        // The indices for the projection array above.
+        final int PROJECTION_ID_INDEX = 0;
+        final int PROJECTION_BEGIN_INDEX = 1;
+        final int PROJECTION_TITLE_INDEX = 2;
+        final int PROJECTION_ORGANIZER_INDEX = 3;
+        final int PROJECTION_DATE = 4;
+
+        // Specify the date range you want to search for recurring event instances
+        Calendar beginTime = Calendar.getInstance();
+        Date date = new Date();
+        beginTime.set(2021, date.getMonth(), date.getDate(), 0, 0, 0);
+        long startMillis = beginTime.getTimeInMillis();
+        Calendar endTime = Calendar.getInstance();
+        endTime.set(2021, date.getMonth(), date.getDate(), 23, 59, 59);
+        long endMillis = endTime.getTimeInMillis();
+
+
+        // The ID of the recurring event whose instances you are searching for in the Instances table
+        String selection = "";
+        String[] selectionArgs = new String[] {};
+
+        // Construct the query with the desired date range.
+        Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
+        ContentUris.appendId(builder, startMillis);
+        ContentUris.appendId(builder, endMillis);
+
+        // Submit the query
+        Cursor cur =  getActivity().getContentResolver().query(builder.build(), INSTANCE_PROJECTION, selection, selectionArgs, CalendarContract.Instances.BEGIN + " ASC");
+
+
+        eventList = new ArrayList<EventModel>();
+
+        long i = 1;
+        while (cur.moveToNext()) {
+            // Get the field values
+            long eventID = cur.getLong(PROJECTION_ID_INDEX);
+            long beginVal = cur.getLong(PROJECTION_BEGIN_INDEX);
+            String title = cur.getString(PROJECTION_TITLE_INDEX);
+            String organizer = cur.getString(PROJECTION_ORGANIZER_INDEX);
+
+            EventModel model = new EventModel();
+            model.setId(i);
+            model.setEvent(title);
+
+            // Do something with the values.
+            //Log.i("Calendar", "Event:  " + title);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(beginVal);
+            DateFormat formatter = new SimpleDateFormat("dd/MM");
+            model.setDate(formatter.format(calendar.getTime()));
+            model.setEventId(eventID);
+            model.setStatus(0);
+            formatter = new SimpleDateFormat("hh:mm aa");
+            model.setTime(formatter.format(calendar.getTime()).replace("AM", "a.m.").replace("PM", "p.m."));
+
+            eventList.add(model);
+            i++;
+        }
+
+        eventsAdapter.setEvents(eventList);
     }
 }
