@@ -6,11 +6,11 @@
     values-round/strings.xml for round devices.
     -->
     <string name="hello_world">Hello Square World!</string>
-    <string name="task_name">Say the name of the task...</string>
-    <string name="event_name">Say the name of the event...</string>
-    <string name="event_date">Say the date of the event (dd/mm)...</string>
-    <string name="event_time">Say the time of the event (hh/mm)</string>
-    <string name="shopping_name">Say the name of the shopping list...</string>
+    <string name="task_name">Hold button and \"task name is ...\"</string>
+    <string name="event_name">Hold button and \"event name is ...\"</string>
+    <string name="event_date">Hold button and \"event date is ...(dd/MM)\"</string>
+    <string name="event_time">Hold button and \"event time is ...(mm:HH p.m.|a.m.)\"</string>
+    <string name="shopping_name">Hold button and \"list name is ...\"</string>
     <string name="title_activity_create_event">CreateEvent</string>
 
     <!-- JARVIS strings -->
