@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,6 +123,8 @@ public class MainShoppingList extends Listen {
     @Override
     public void getResult(String result) {
 
+        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+
         if(result.contains("yes") && deleteAll){
             confirmDeleteAllLists();
             deleteAll = false;
@@ -222,12 +225,13 @@ public class MainShoppingList extends Listen {
 
     private void deleteList(String result){
 
-        delete = true;
         String nameOfList = Message.getAfterString("list ", result);
 
         modelToDelete = shoppingList.stream().filter(sl -> sl.getTitle().equals(nameOfList)).findFirst().orElse(null);
 
         if(modelToDelete != null){ // list with name found
+
+            delete = true;
 
             Voice.instancia().speak(getString(R.string.Delete, "list", nameOfList), TextToSpeech.QUEUE_FLUSH, null, "text");
 

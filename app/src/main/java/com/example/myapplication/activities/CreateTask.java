@@ -80,6 +80,8 @@ public class CreateTask extends ListenActivity {
     @Override
     public void getResult(String result) {
 
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+
         int action = Message.parseMainCreateModifyTask(result);
 
         switch (action){

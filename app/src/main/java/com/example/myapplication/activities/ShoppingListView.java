@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -104,9 +105,10 @@ public class ShoppingListView extends ListenActivity {
     }
 
 
-
     @Override
     public void getResult(String result) {
+
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
 
         if(delete && result.contains("yes")){
             confirmDelete();
@@ -189,7 +191,6 @@ public class ShoppingListView extends ListenActivity {
 
     private void deleteElement(String result){
 
-        delete = true;
         String nameOfElement = Message.getAfterString("element ", result);
         
         if(nameOfElement != null && nameOfElement.length() > 0) {
@@ -197,6 +198,8 @@ public class ShoppingListView extends ListenActivity {
             elementToDelete = items.stream().filter(it -> it.getName().equals(nameOfElement)).findFirst().orElse(null);
 
             if (elementToDelete != null) { // task with name found
+
+                delete = true;
 
                 Voice.instancia().speak(getString(R.string.Delete, "element", nameOfElement), TextToSpeech.QUEUE_FLUSH, null, "text");
 

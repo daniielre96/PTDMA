@@ -18,6 +18,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MainTasks extends Listen {
+public class MainTasks extends Listen{
 
     private RecyclerView tasksRecyclerView;
     private ToDoAdapter tasksAdapter;
@@ -114,6 +115,8 @@ public class MainTasks extends Listen {
 
     @Override
     public void getResult(String result) {
+
+        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
 
         if(deleteAll && result.contains("yes")){
             confirmDeleteAllTasks();
@@ -328,7 +331,7 @@ public class MainTasks extends Listen {
     }
 
     private void markTaskAsDone(String result){
-        String nameOfTask = Message.getBetweenStrings("task ", " as done", result);
+        String nameOfTask = Message.getAfterString("task ", result);
 
         ToDoModel task = taskList.stream().filter(t -> t.getTask().equals(nameOfTask)).findFirst().orElse(null);
 

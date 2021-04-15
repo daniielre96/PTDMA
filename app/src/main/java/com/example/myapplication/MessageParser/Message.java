@@ -28,20 +28,16 @@ public class Message {
         if(message.contains("help")){ // HELP
             return 1;
         }
-        else if(stringContains(message, UNMARK_SINONIMUS) && !message.contains("all tasks")){ // MARK TASK AS UNDONE
-            Pattern pattern = Pattern.compile("task(.*?)");
-            Matcher matcher = pattern.matcher(message);
-            while(matcher.find()){return 3;}
+        else if(stringContains(message, UNMARK_SINONIMUS) && !message.contains("all tasks") && !message.contains("show")){ // UNMARK TASK
+            return 3;
         }
-        else if(stringContains(message, MARK_SINONIMUS) && message.contains("undone")){ // MARK ALL TASKS AS UNDONE
+        else if(stringContains(message, UNMARK_SINONIMUS) && message.contains("all tasks") && !message.contains("show")){ // UNMARK ALL TASKS
             return 5;
         }
-        else if(stringContains(message, MARK_SINONIMUS) && !message.contains("all tasks")){ // MARK TASK AS DONE
-            Pattern pattern = Pattern.compile("task(.*?)as done");
-            Matcher matcher = pattern.matcher(message);
-            while(matcher.find()){return 2;}
+        else if(stringContains(message, MARK_SINONIMUS) && !message.contains("all tasks") && !message.contains("show")){ // MARK TASK
+            return 2;
         }
-        else if(stringContains(message, MARK_SINONIMUS) && message.contains("done")){ // MARK ALL TASKS AS DONE
+        else if(stringContains(message, MARK_SINONIMUS) && message.contains("all tasks") && !message.contains("show")){ // MARK ALL TASKS
             return 4;
         }
         else if(stringContains(message, DELETE_SINONIMUS) && !message.contains("all tasks")){ // DELETE A TASK
@@ -73,10 +69,10 @@ public class Message {
             return 13;
         }
         // QUERIES
-        else if(message.contains("show") && message.contains("undone")){ // SHOW UNDONE TASKS
+        else if(message.contains("show") && message.contains("uncheck")){ // SHOW UNMARK TASKS
             return 14;
         }
-        else if(message.contains("show") && message.contains("done")){ // SHOW DONE TASKS
+        else if(message.contains("show") && message.contains("check")){ // SHOW MARK TASKS
             return 15;
         }
         else if(message.contains("show") && message.contains("all")){ // SHOW ALL TASKS
@@ -177,12 +173,12 @@ public class Message {
         if(message.contains("help")){ // HELP
             return 1;
         }
-        else if(stringContains(message, DELETE_SINONIMUS) && !message.contains("all lists")){ // DELETE A LIST
+        else if(stringContains(message, DELETE_SINONIMUS) && !message.contains("all lists") && !message.contains("all list")){ // DELETE A LIST
             Pattern pattern = Pattern.compile("list(.*?)");
             Matcher matcher = pattern.matcher(message);
             while(matcher.find()){return 2;}
         }
-        else if(stringContains(message, DELETE_SINONIMUS) && message.contains("all lists")){ // DELETE ALL LISTS
+        else if(stringContains(message, DELETE_SINONIMUS) && (message.contains("all lists") || message.contains("all list"))){ // DELETE ALL LISTS
             return 3;
         }
         else if(stringContains(message, CREATE_SINONIMUS)){ // CREATE A LIST
@@ -193,8 +189,8 @@ public class Message {
             Matcher matcher = pattern.matcher(message);
             while(matcher.find()){return 5;}
         }
-        else if(message.contains("show me")){ // SHOW A LIST
-            Pattern pattern = Pattern.compile("the list(.*?)");
+        else if(message.contains("show")){ // SHOW A LIST
+            Pattern pattern = Pattern.compile("list(.*?)");
             Matcher matcher = pattern.matcher(message);
             while(matcher.find()){return 6;}
         }
@@ -252,7 +248,7 @@ public class Message {
 
    static private boolean stringContains(String message, String [] strings){
         System.out.println(Arrays.stream(strings).anyMatch(message::contains));
-        return Arrays.stream(strings).anyMatch(message::contains);
+        return Arrays.stream(strings).anyMatch(message.toLowerCase()::contains);
    }
 
     static public String getBetweenStrings(String start, String end, String target){

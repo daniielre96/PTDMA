@@ -1,11 +1,13 @@
 package com.example.myapplication.fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -31,6 +33,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -82,7 +86,7 @@ public class MainEvents extends Listen {
     public void onStart() {
         super.onStart();
 
-        GetCaliD();
+        getPrimaryCalendar();
         showEvents();
         eventsAdapter.setEvents(eventList);
     }
@@ -136,6 +140,8 @@ public class MainEvents extends Listen {
 
     @Override
     public void getResult(String result) {
+
+        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
 
         if(delete && result.contains("yes")){
             confirmDeleteEvent();
@@ -330,7 +336,8 @@ public class MainEvents extends Listen {
                 CalendarContract.Instances.EVENT_ID,       // 0
                 CalendarContract.Instances.BEGIN,         // 1
                 CalendarContract.Instances.TITLE,        // 2
-                CalendarContract.Instances.ORGANIZER
+                CalendarContract.Instances.ORGANIZER,
+                CalendarContract.Instances.ALL_DAY
         };
 
         // The indices for the projection array above.
@@ -338,14 +345,13 @@ public class MainEvents extends Listen {
         final int PROJECTION_BEGIN_INDEX = 1;
         final int PROJECTION_TITLE_INDEX = 2;
         final int PROJECTION_ORGANIZER_INDEX = 3;
-        final int PROJECTION_DATE = 4;
+        final int PROJECTION_ALL_DAY = 4;
 
         // Specify the date range you want to search for recurring event instances
         LocalDate currentDate = LocalDate.now();
         //Adding one week to the current date
         LocalDate result = currentDate.plus(7, ChronoUnit.DAYS);
         Calendar beginTime = Calendar.getInstance();
-        Date date = new Date();
         beginTime.set(2021, currentDate.getMonthValue()-1, currentDate.getDayOfMonth(), 0, 0, 0);
         long startMillis = beginTime.getTimeInMillis();
         Calendar endTime = Calendar.getInstance();
@@ -375,6 +381,7 @@ public class MainEvents extends Listen {
             long beginVal = cur.getLong(PROJECTION_BEGIN_INDEX);
             String title = cur.getString(PROJECTION_TITLE_INDEX);
             String organizer = cur.getString(PROJECTION_ORGANIZER_INDEX);
+            boolean all_day = !cur.getString(PROJECTION_ALL_DAY).equals("0");
 
             EventModel model = new EventModel();
             model.setId(i);
@@ -389,7 +396,8 @@ public class MainEvents extends Listen {
             model.setEventId(eventID);
             model.setStatus(0);
             formatter = new SimpleDateFormat("hh:mm aa");
-            model.setTime(formatter.format(calendar.getTime()).replace("AM", "a.m.").replace("PM", "p.m."));
+            if(!all_day)model.setTime(formatter.format(calendar.getTime()).replace("AM", "a.m.").replace("PM", "p.m."));
+            else model.setTime("all day");
 
             eventList.add(model);
             i++;
@@ -464,5 +472,44 @@ public class MainEvents extends Listen {
         }
 
         eventsAdapter.setEvents(eventList);
+    }
+
+    public void getPrimaryCalendar() {
+
+        // Projection array. Creating indices for this array instead of doing dynamic lookups improves performance.
+        final String[] EVENT_PROJECTION = new String[] {
+                CalendarContract.Calendars._ID,                           // 0
+                CalendarContract.Calendars.ACCOUNT_NAME,                  // 1
+                CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,         // 2
+                CalendarContract.Calendars.OWNER_ACCOUNT                  // 3
+        };
+
+        // The indices for the projection array above.
+        final int PROJECTION_ID_INDEX = 0;
+        final int PROJECTION_ACCOUNT_NAME_INDEX = 1;
+        final int PROJECTION_DISPLAY_NAME_INDEX = 2;
+        final int PROJECTION_OWNER_ACCOUNT_INDEX = 3;
+
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        String selection = CalendarContract.Calendars.VISIBLE + " = 1 AND "  + CalendarContract.Calendars.IS_PRIMARY + "=1";
+        Cursor cur = contentResolver.query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, selection, null, null);
+
+        ArrayList<String> calendarInfos = new ArrayList<>();
+        while (cur.moveToNext()) {
+            long calID = 0;
+            String displayName = null;
+            String accountName = null;
+            String ownerName = null;
+
+            // Get the field values
+            calID = cur.getLong(PROJECTION_ID_INDEX);
+            displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
+            accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
+            ownerName = cur.getString(PROJECTION_OWNER_ACCOUNT_INDEX);
+
+            String calendarInfo = String.format("Calendar ID: %s\nDisplay Name: %s\nAccount Name: %s\nOwner Name: %s", calID, displayName, accountName, ownerName);
+            calendarInfos.add(calendarInfo);
+            ((GlobalVars)this.getActivity().getApplication()).setIdCal(calID);
+        }
     }
 }
