@@ -13,4 +13,15 @@
         android:background="@drawable/ic_grupo_48"
         android:layout_above="@+id/navbar"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hold button to talk"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:textStyle="bold"/>
+
 </RelativeLayout>
